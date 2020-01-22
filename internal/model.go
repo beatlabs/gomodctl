@@ -1,11 +1,13 @@
 package internal
 
+// CheckResult is exported.
 type CheckResult struct {
 	Name          string
 	LocalVersion  string
 	LatestVersion string
 }
 
+// SearchResult is exported.
 type SearchResult struct {
 	Name        string
 	Path        string

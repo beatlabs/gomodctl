@@ -15,14 +15,14 @@ type Checker interface {
 	Check(path string) ([]internal.CheckResult, error)
 }
 
-// CheckOptions is exported.
-type CheckOptions struct {
+// Options is exported.
+type Options struct {
 	Path string
 }
 
 // NewCmdCheck returns an instance of Search command.
 func NewCmdCheck(checker Checker) *cobra.Command {
-	o := CheckOptions{}
+	o := Options{}
 
 	cmd := &cobra.Command{
 		Use:   "check",
@@ -46,7 +46,7 @@ func NewCmdCheck(checker Checker) *cobra.Command {
 }
 
 // Execute is exported.
-func (o *CheckOptions) Execute(checker Checker) {
+func (o *Options) Execute(checker Checker) {
 	checkResults, err := checker.Check(o.Path)
 	if err != nil {
 		fmt.Println(err)

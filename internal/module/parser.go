@@ -8,15 +8,18 @@ import (
 	"golang.org/x/mod/modfile"
 )
 
+// VersionParser is exported.
 type VersionParser struct {
 	GoModPath string
 }
 
+// PackageResult is exported.
 type PackageResult struct {
 	Path         string
 	LocalVersion string
 }
 
+// Parse is exported.
 func (v *VersionParser) Parse(path string) ([]PackageResult, error) {
 	home := viper.GetString("home")
 	if path != "" {
