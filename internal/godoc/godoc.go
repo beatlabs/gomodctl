@@ -3,8 +3,8 @@ package godoc
 import (
 	"errors"
 
-	"github.com/go-resty/resty/v2"
 	"github.com/beatlabs/gomodctl/internal"
+	"github.com/go-resty/resty/v2"
 )
 
 type response struct {
@@ -18,14 +18,17 @@ type response struct {
 	} `json:"results"`
 }
 
+// Client is exported.
 type Client struct {
 	restClient *resty.Client
 }
 
+// NewClient is exported.
 func NewClient() *Client {
 	return &Client{restClient: resty.New()}
 }
 
+// Search is exported.
 func (c *Client) Search(term string) ([]internal.SearchResult, error) {
 	if term == "" {
 		return nil, errors.New("empty term")
@@ -61,6 +64,7 @@ func (c *Client) Search(term string) ([]internal.SearchResult, error) {
 	return results, nil
 }
 
+// Info is exported.
 func (c *Client) Info(path string) (string, error) {
 	if path == "" {
 		return "", errors.New("path is empty")

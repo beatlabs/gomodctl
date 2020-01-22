@@ -3,14 +3,16 @@ package module
 import (
 	"strings"
 
-	"github.com/prometheus/common/log"
 	"github.com/beatlabs/gomodctl/internal"
+	"github.com/prometheus/common/log"
 	"github.com/tcnksm/go-latest"
 )
 
+// Checker is exported.
 type Checker struct {
 }
 
+// Check is exported.
 func (c *Checker) Check(path string) ([]internal.CheckResult, error) {
 	parser := VersionParser{GoModPath: "go.mod"}
 
@@ -40,6 +42,7 @@ func (c *Checker) Check(path string) ([]internal.CheckResult, error) {
 	return checkResults, nil
 }
 
+// VersionFetcher is exported.
 type VersionFetcher interface {
 	Fetch() (string, error)
 }
@@ -50,17 +53,19 @@ func factory(path string, version string) VersionFetcher {
 			path:         path,
 			localVersion: version,
 		}
-	} else {
-		return &DummyFetcher{
-			Path: path,
-		}
+	}
+
+	return &DummyFetcher{
+		Path: path,
 	}
 }
 
+// DummyFetcher is exported.
 type DummyFetcher struct {
 	Path string
 }
 
+// Fetch is exported.
 func (f *DummyFetcher) Fetch() (string, error) {
 	return "unknown", nil
 }
@@ -70,6 +75,7 @@ type githubFetcher struct {
 	localVersion string
 }
 
+// Fetch is exported.
 func (g *githubFetcher) Fetch() (string, error) {
 	usernameAndRepo := strings.TrimPrefix(g.path, "github.com/")
 

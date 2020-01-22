@@ -16,14 +16,14 @@ type Searcher interface {
 	Search(term string) ([]internal.SearchResult, error)
 }
 
-// SearchOptions is exported.
-type SearchOptions struct {
+// Options is exported.
+type Options struct {
 	Term string
 }
 
 // NewCmdSearch returns an instance of Search command.
 func NewCmdSearch(searcher Searcher) *cobra.Command {
-	o := SearchOptions{}
+	o := Options{}
 
 	cmd := &cobra.Command{
 		Use:   "search [term to search]",
@@ -47,7 +47,7 @@ func NewCmdSearch(searcher Searcher) *cobra.Command {
 }
 
 // Execute is exported.
-func (o *SearchOptions) Execute(op Searcher) {
+func (o *Options) Execute(op Searcher) {
 	searchResults, err := op.Search(o.Term)
 	if err != nil {
 		fmt.Println(err)

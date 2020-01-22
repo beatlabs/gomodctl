@@ -11,20 +11,20 @@ import (
 	"github.com/beatlabs/gomodctl/internal"
 )
 
-// InfoGetter is exported.
-type InfoGetter interface {
+// Infoer is exported.
+type Infoer interface {
 	Search(term string) ([]internal.SearchResult, error)
 	Info(path string) (string, error)
 }
 
-// InfoOptions is exported.
-type InfoOptions struct {
+// Options is exported.
+type Options struct {
 	Term string
 }
 
 // NewCmdInfo returns an instance of Search command.
-func NewCmdInfo(ig InfoGetter) *cobra.Command {
-	o := InfoOptions{}
+func NewCmdInfo(ig Infoer) *cobra.Command {
+	o := Options{}
 
 	cmd := &cobra.Command{
 		Use:   "info",
@@ -47,7 +47,7 @@ func NewCmdInfo(ig InfoGetter) *cobra.Command {
 }
 
 // Execute is exported.
-func (o *InfoOptions) Execute(ig InfoGetter) {
+func (o *Options) Execute(ig Infoer) {
 	searchResults, err := ig.Search(o.Term)
 	if err != nil {
 		fmt.Println(err)
