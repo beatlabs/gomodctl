@@ -17,7 +17,7 @@ jobs:
 
     - name: Linter
       run: |
-        docker run --rm -v $(pwd):/data cytopia/golint .
+        make lint
 
     - name: Test & Publish
       run: |
