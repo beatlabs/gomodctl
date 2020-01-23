@@ -6,9 +6,9 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/beatlabs/gomodctl/internal"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
-	"github.com/beatlabs/gomodctl/internal"
 )
 
 // Infoer is exported.
@@ -27,7 +27,7 @@ func NewCmdInfo(ig Infoer) *cobra.Command {
 	o := Options{}
 
 	cmd := &cobra.Command{
-		Use:   "info",
+		Use:   "info [name of the package]",
 		Short: "package info",
 		Long:  `return detailed info about first matched result`,
 		Args: func(cmd *cobra.Command, args []string) error {

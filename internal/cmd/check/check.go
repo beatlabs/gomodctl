@@ -5,9 +5,9 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/beatlabs/gomodctl/internal"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
-	"github.com/beatlabs/gomodctl/internal"
 )
 
 // Checker is exported.
