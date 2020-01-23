@@ -12,7 +12,7 @@ import (
 
 // Checker is exported.
 type Checker interface {
-	Check(path string) ([]internal.CheckResult, error)
+	Check(path string) (map[string]internal.CheckResult, error)
 }
 
 // Options is exported.
@@ -55,11 +55,11 @@ func (o *Options) Execute(checker Checker) {
 
 	var data [][]string
 
-	for _, result := range checkResults {
+	for name, result := range checkResults {
 		data = append(data, []string{
-			result.Name,
-			result.LocalVersion,
-			result.LatestVersion,
+			name,
+			result.LocalVersion.Original(),
+			result.LatestVersion.Original(),
 		})
 	}
 

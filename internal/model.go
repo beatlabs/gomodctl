@@ -2,9 +2,9 @@ package internal
 
 // CheckResult is exported.
 type CheckResult struct {
-	Name          string
-	LocalVersion  string
-	LatestVersion string
+	LocalVersion  Version
+	LatestVersion Version
+	Error         error
 }
 
 // SearchResult is exported.
@@ -15,4 +15,14 @@ type SearchResult struct {
 	Stars       int
 	Score       float64
 	Synopsis    string
+}
+
+// Version is exported.
+type Version interface {
+	Original() string
+	Major() int64
+	Minor() int64
+	Patch() int64
+	Prerelease() string
+	Metadata() string
 }

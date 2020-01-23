@@ -1,54 +1,82 @@
 package module
 
 import (
-	"io/ioutil"
+	"encoding/json"
+	"os/exec"
+	"regexp"
 	"strings"
 
+	"github.com/Masterminds/semver"
 	"github.com/spf13/viper"
-	"golang.org/x/mod/modfile"
 )
 
-// VersionParser is exported.
-type VersionParser struct {
-	GoModPath string
+var regex = regexp.MustCompile(`({([^}]*)})`)
+
+type item struct {
+	Path     string   `json:"Path"`
+	Version  string   `json:"Version"`
+	Versions []string `json:"Versions"`
+	Indirect bool     `json:"Indirect"`
+	Main     bool     `json:"Main"`
+	Dir      string   `json:"Dir"`
+	GoMod    string   `json:"GoMod"`
 }
 
-// PackageResult is exported.
-type PackageResult struct {
-	Path         string
-	LocalVersion string
+type versionParser struct {
 }
 
-// Parse is exported.
-func (v *VersionParser) Parse(path string) ([]PackageResult, error) {
+type packageResult struct {
+	path              string
+	localVersion      *semver.Version
+	availableVersions []*semver.Version
+	dir               string
+}
+
+// Parse is exported
+func (v *versionParser) Parse(path string) ([]packageResult, error) {
+	cmd := exec.Command("go", "list", "-m", "-versions", "-json", "all")
+
 	home := viper.GetString("home")
 	if path != "" {
 		if home != "" && strings.Contains(path, "~") {
-			path = home + strings.Replace(path, "~", "", 1) + "/" + v.GoModPath
+			path = home + strings.Replace(path, "~", "", 1) + "/"
 		} else {
-			path = path + "/" + v.GoModPath
+			path = path + "/"
 		}
-	} else {
-		path = v.GoModPath
+
+		cmd.Dir = path
 	}
 
-	content, err := ioutil.ReadFile(path)
+	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return nil, err
 	}
 
-	parse, err := modfile.Parse("go.mod", content, nil)
-	if err != nil {
-		return nil, err
-	}
+	output := string(out)
+	versionOutputs := regex.FindAllString(output, -1)
 
-	var result []PackageResult
+	var result []packageResult
 
-	for _, require := range parse.Require {
-		if !require.Indirect {
-			result = append(result, PackageResult{
-				Path:         require.Mod.Path,
-				LocalVersion: require.Mod.Version,
+	for _, versionOutput := range versionOutputs {
+		it := item{}
+
+		err := json.Unmarshal([]byte(versionOutput), &it)
+		if err != nil {
+			return nil, err
+		}
+
+		if !it.Indirect && !it.Main {
+			availableVersions := make([]*semver.Version, len(it.Versions))
+
+			for i, version := range it.Versions {
+				availableVersions[i] = semver.MustParse(version)
+			}
+
+			result = append(result, packageResult{
+				path:              it.Path,
+				localVersion:      semver.MustParse(it.Version),
+				dir:               it.Dir,
+				availableVersions: availableVersions,
 			})
 		}
 	}
