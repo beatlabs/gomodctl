@@ -7,6 +7,22 @@ Currently supported commands:
 - info - print information about the first matched package (eg `gomodctl info gomock`)
 - check - check packages in the project for new versions (for now it requires go.mod file)
 
+## Installation
+
+Execute:
+
+```bash
+$ go get github.com/beatlabs/gomodctl
+```
+
+Or using [Homebrew 🍺](https://brew.sh)
+
+```bash
+brew tap beatlabs/gomodctl https://github.com/beatlabs/gomodctl
+brew install gomodctl
+```
+
+
 ## Features
 
 ### gomodctl search <term>
