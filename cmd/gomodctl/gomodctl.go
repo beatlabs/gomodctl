@@ -12,9 +12,13 @@ import (
 	updatecmd "github.com/beatlabs/gomodctl/internal/cmd/update"
 	"github.com/beatlabs/gomodctl/internal/godoc"
 	"github.com/beatlabs/gomodctl/internal/module"
-	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
+
+	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
+
+	"github.com/beatlabs/gomodctl/internal/cmd/info"
+	"github.com/beatlabs/gomodctl/internal/cmd/search"
 )
 
 var ro RootOptions
@@ -70,12 +74,18 @@ func Execute() {
 	gd := godoc.NewClient()
 	checker := module.Checker{Ctx: ctx}
 	updater := module.Updater{Ctx: ctx}
+	licenseChecker, err := license.NewChecker()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 
 	// Add sub-commands
 	rootCmd.AddCommand(search.NewCmdSearch(gd))
 	rootCmd.AddCommand(info.NewCmdInfo(gd))
 	rootCmd.AddCommand(check.NewCmdCheck(&checker))
 	rootCmd.AddCommand(updatecmd.NewCmdUpdate(&updater))
+	rootCmd.AddCommand(cmdlicense.NewCmdLicense(licenseChecker))
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
