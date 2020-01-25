@@ -1,6 +1,7 @@
 package module
 
 import (
+	"context"
 	"encoding/json"
 	"os/exec"
 	"regexp"
@@ -23,6 +24,7 @@ type item struct {
 }
 
 type versionParser struct {
+	ctx context.Context
 }
 
 type packageResult struct {
@@ -34,7 +36,7 @@ type packageResult struct {
 
 // Parse is exported
 func (v *versionParser) Parse(path string) ([]packageResult, error) {
-	cmd := exec.Command("go", "list", "-m", "-versions", "-json", "all")
+	cmd := exec.CommandContext(v.ctx, "go", "list", "-m", "-versions", "-json", "all")
 
 	home := viper.GetString("home")
 	if path != "" {

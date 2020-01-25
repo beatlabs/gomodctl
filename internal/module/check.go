@@ -1,6 +1,7 @@
 package module
 
 import (
+	"context"
 	"errors"
 	"sort"
 
@@ -13,11 +14,12 @@ var ErrNoVersionAvailable = errors.New("no version available")
 
 // Checker is exported
 type Checker struct {
+	Ctx context.Context
 }
 
 // Check is exported
 func (c *Checker) Check(path string) (map[string]internal.CheckResult, error) {
-	parser := versionParser{}
+	parser := versionParser{ctx: c.Ctx}
 
 	results, err := parser.Parse(path)
 	if err != nil {

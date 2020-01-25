@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
+	"os/signal"
 
 	"github.com/beatlabs/gomodctl/internal/cmd/check"
 	"github.com/beatlabs/gomodctl/internal/godoc"
@@ -39,6 +41,25 @@ type RootOptions struct {
 
 // Execute is exported.
 func Execute() {
+	ctx, cancel := context.WithCancel(context.Background())
+
+	c := make(chan os.Signal, 1)
+
+	signal.Notify(c, os.Interrupt)
+
+	defer func() {
+		signal.Stop(c)
+		cancel()
+	}()
+
+	go func() {
+		select {
+		case <-c:
+			cancel()
+		case <-ctx.Done():
+		}
+	}()
+
 	ro.config = viper.GetString("config")
 	ro.registry = viper.GetString("registry")
 
@@ -48,7 +69,7 @@ func Execute() {
 	// fmt.Println("config:", ro.config, "registry:", ro.registry)
 
 	gd := godoc.NewClient()
-	checker := module.Checker{}
+	checker := module.Checker{Ctx: ctx}
 
 	// Add sub-commands
 	rootCmd.AddCommand(search.NewCmdSearch(gd))
