@@ -168,3 +168,6 @@ Temporary Items
 .history
 
 # End of https://www.gitignore.io/api/go,linux,macos,jetbrains+all,visualstudiocode
+
+# goreleaser
+dist
