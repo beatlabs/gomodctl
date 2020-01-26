@@ -1,4 +1,4 @@
-# gomodctl [![actions](https://github.com/beatlabs/gomodctl/workflows/gomodctl/badge.svg)](https://github.com/beatlabs/gomodctl/actions)
+# gomodctl [![actions](https://github.com/beatlabs/gomodctl/workflows/gomodctl%20build/badge.svg)](https://github.com/beatlabs/gomodctl/actions)
 
 *gomodctl* - search, check and update go modules.
 
