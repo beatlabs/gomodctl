@@ -2,16 +2,16 @@
 class Gomodctl < Formula
   desc "search,check and update go modules"
   homepage "https://github.com/beatlabs/gomodctl"
-  version "0.0.5"
+  version "0.0.6"
   bottle :unneeded
 
   if OS.mac?
-    url "https://github.com/beatlabs/gomodctl/releases/download/v0.0.5/gomodctl_Darwin_x86_64.tar.gz"
-    sha256 "c3530ff78f1f033b334c67ac321ed5377f9dba6bc25b0ded13b8b2eefdf91c92"
+    url "https://github.com/beatlabs/gomodctl/releases/download/v0.0.6/gomodctl_Darwin_x86_64.tar.gz"
+    sha256 "24c0145b4faab5f16b0591d3220e297c25296f26388bd3e79e344d7e8d12c1c0"
   elsif OS.linux?
     if Hardware::CPU.intel?
-      url "https://github.com/beatlabs/gomodctl/releases/download/v0.0.5/gomodctl_Linux_x86_64.tar.gz"
-      sha256 "99b9e14bf4f3fca047c3226edf0936de52a92fcc6b945cf1091e7ebaa54f7e37"
+      url "https://github.com/beatlabs/gomodctl/releases/download/v0.0.6/gomodctl_Linux_x86_64.tar.gz"
+      sha256 "3b2cac8877c6f3cba6c9bf3e664205f19e70243cf3b88413746cec02e0bb7d13"
     end
   end
 
@@ -20,6 +20,6 @@ class Gomodctl < Formula
   end
 
   test do
-    system "#{bin/gomodctl info gomock}"
+    system "#{bin/gomodctl}"
   end
 end
