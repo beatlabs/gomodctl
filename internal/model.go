@@ -1,9 +1,11 @@
 package internal
 
+import "github.com/Masterminds/semver"
+
 // CheckResult is exported.
 type CheckResult struct {
-	LocalVersion  Version
-	LatestVersion Version
+	LocalVersion  *semver.Version
+	LatestVersion *semver.Version
 	Error         error
 }
 
@@ -17,12 +19,12 @@ type SearchResult struct {
 	Synopsis    string
 }
 
-// Version is exported.
-type Version interface {
-	Original() string
-	Major() int64
-	Minor() int64
-	Patch() int64
-	Prerelease() string
-	Metadata() string
-}
+// UpdateType is exported
+type UpdateType int
+
+const (
+	// Minor is exported
+	Minor UpdateType = iota
+	// Major is exported
+	Major
+)

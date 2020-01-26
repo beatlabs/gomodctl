@@ -30,7 +30,7 @@ func (s *CheckTestSuite) Test_SelfCheck() {
 
 	result, err := checker.Check("../..")
 	s.NoError(err)
-	s.Len(result, 7)
+	s.NotEmpty(result)
 }
 
 func (s *CheckTestSuite) Test_SelfCheck_CancelContextBefore() {

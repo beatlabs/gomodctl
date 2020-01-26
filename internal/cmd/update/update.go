@@ -10,24 +10,25 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Checker is exported.
-type Checker interface {
-	Check(path string) (map[string]internal.CheckResult, error)
+// Updater is exported.
+type Updater interface {
+	Update(path string, updateType internal.UpdateType) (map[string]internal.CheckResult, error)
 }
 
 // Options is exported.
 type Options struct {
-	Path string
+	Path       string
+	UpdateType internal.UpdateType
 }
 
-// NewCmdCheck returns an instance of Search command.
-func NewCmdCheck(checker Checker) *cobra.Command {
+// NewCmdUpdate returns an instance of Update command.
+func NewCmdUpdate(updater Updater) *cobra.Command {
 	o := Options{}
 
 	cmd := &cobra.Command{
-		Use:   "check",
-		Short: "check local module for updates",
-		Long:  `get list of local module and check them for updates`,
+		Use:   "update",
+		Short: "update project dependencies",
+		Long:  `update project dependencies to minor or major versions`,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				o.Path = ""
@@ -38,7 +39,7 @@ func NewCmdCheck(checker Checker) *cobra.Command {
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			o.Execute(checker)
+			o.Execute(updater)
 		},
 	}
 
@@ -46,8 +47,8 @@ func NewCmdCheck(checker Checker) *cobra.Command {
 }
 
 // Execute is exported.
-func (o *Options) Execute(checker Checker) {
-	checkResults, err := checker.Check(o.Path)
+func (o *Options) Execute(updater Updater) {
+	checkResults, err := updater.Update(o.Path, o.UpdateType)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -64,7 +65,7 @@ func (o *Options) Execute(checker Checker) {
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Package", "Current", "Latest"})
+	table.SetHeader([]string{"Module", "Previous", "Now"})
 	table.SetFooter([]string{"", "number of packages", strconv.Itoa(len(checkResults))})
 	table.SetBorder(false)
 	table.AppendBulk(data)
