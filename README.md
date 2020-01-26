@@ -139,3 +139,7 @@ Result:
                                                NUMBER OF PACKAGES          |    9
                                     ---------------------------------------+----------
 ```
+
+## Code of conduct
+
+Please note that this project is released with a [Contributor Code of Conduct](https://github.com/beatlabs/gomodctl/blob/master/CODE_OF_CONDUCT.md). By participating in this project and its community you agree to abide by those terms.
