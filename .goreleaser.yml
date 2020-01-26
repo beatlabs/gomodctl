@@ -61,4 +61,4 @@ brews:
   folder: Formula
   install: bin.install "gomodctl"
   test: |
-    system "#{bin/gomodctl info gomock}"
+    system "#{bin/gomodctl}"
