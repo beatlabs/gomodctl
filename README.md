@@ -113,7 +113,7 @@ package trace
 
 ### gomodctl check
 
-Check package versions in the given Go project.
+Check module versions in the given Go project.
 
 Command:
 
@@ -125,6 +125,36 @@ Result:
 
 ```shell script
                PACKAGE              |               CURRENT                | LATEST
+------------------------------------+--------------------------------------+----------
+  github.com/go-resty/resty/v2      | v2.1.0                               | v2.1.0
+  github.com/mitchellh/go-homedir   | v1.1.0                               | v1.1.0
+  github.com/olekukonko/tablewriter | v0.0.4                               | v0.0.4
+  github.com/prometheus/common      | v0.4.0                               | 0.7.0
+  github.com/spf13/cobra            | v0.0.5                               | v0.0.5
+  github.com/spf13/viper            | v1.5.0                               | 1.6.0
+  github.com/stretchr/testify       | v1.4.0                               | v1.4.0
+  github.com/tcnksm/go-latest       | v0.0.0-20170313132115-e3007ae9052e   | 0.1.1
+  golang.org/x/mod                  | v0.1.1-0.20191126161957-788aebd06792 | unknown
+------------------------------------+--------------------------------------+----------
+                                               NUMBER OF PACKAGES          |    9
+                                    ---------------------------------------+----------
+```
+
+### gomodctl update
+
+Update module versions to latest minor
+
+Command:
+
+```shell script
+gomodctl update
+```
+
+Result:
+
+```shell script
+Your dependencies updated to latest minor and go.mod.backup created
+               PACKAGE              |               PREVIOUS               | NOW
 ------------------------------------+--------------------------------------+----------
   github.com/go-resty/resty/v2      | v2.1.0                               | v2.1.0
   github.com/mitchellh/go-homedir   | v1.1.0                               | v1.1.0

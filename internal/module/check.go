@@ -19,7 +19,23 @@ type Checker struct {
 
 // Check is exported
 func (c *Checker) Check(path string) (map[string]internal.CheckResult, error) {
-	parser := versionParser{ctx: c.Ctx}
+	return getModAndFilter(c.Ctx, path, getLatestVersion)
+}
+
+func getLatestVersion(_ *semver.Version, versions []*semver.Version) (*semver.Version, error) {
+	if len(versions) == 0 {
+		return nil, ErrNoVersionAvailable
+	}
+
+	sort.Sort(semver.Collection(versions))
+
+	lastVersion := versions[len(versions)-1]
+
+	return lastVersion, nil
+}
+
+func getModAndFilter(ctx context.Context, path string, filter func(*semver.Version, []*semver.Version) (*semver.Version, error)) (map[string]internal.CheckResult, error) {
+	parser := versionParser{ctx: ctx}
 
 	results, err := parser.Parse(path)
 	if err != nil {
@@ -29,7 +45,7 @@ func (c *Checker) Check(path string) (map[string]internal.CheckResult, error) {
 	checkResults := make(map[string]internal.CheckResult)
 
 	for _, result := range results {
-		latestVersion, err := getLatestVersion(result.availableVersions)
+		latestVersion, err := filter(result.localVersion, result.availableVersions)
 
 		checkResult := internal.CheckResult{
 			LocalVersion: result.localVersion,
@@ -47,16 +63,4 @@ func (c *Checker) Check(path string) (map[string]internal.CheckResult, error) {
 	}
 
 	return checkResults, nil
-}
-
-func getLatestVersion(versions []*semver.Version) (*semver.Version, error) {
-	if len(versions) == 0 {
-		return nil, ErrNoVersionAvailable
-	}
-
-	sort.Sort(semver.Collection(versions))
-
-	lastVersion := versions[len(versions)-1]
-
-	return lastVersion, nil
 }
