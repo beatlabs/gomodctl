@@ -7,8 +7,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/beatlabs/gomodctl/internal"
-
 	"github.com/stretchr/testify/suite"
 )
 
@@ -54,7 +52,7 @@ func (s *UpdateTestSuite) Test_() {
 		Ctx: s.ctx,
 	}
 
-	update, err := updater.Update(s.tempDir, internal.Major)
+	update, err := updater.Update(s.tempDir)
 
 	s.NoError(err)
 	s.NotEmpty(update)

@@ -18,13 +18,3 @@ type SearchResult struct {
 	Score       float64
 	Synopsis    string
 }
-
-// UpdateType is exported
-type UpdateType int
-
-const (
-	// Minor is exported
-	Minor UpdateType = iota
-	// Major is exported
-	Major
-)

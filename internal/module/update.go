@@ -8,7 +8,6 @@ import (
 	"github.com/Masterminds/semver"
 	"github.com/beatlabs/gomodctl/internal"
 	"golang.org/x/mod/modfile"
-	"golang.org/x/mod/module"
 )
 
 // Updater is exported
@@ -16,16 +15,20 @@ type Updater struct {
 	Ctx context.Context
 }
 
-const goMod = "go.mod"
+const (
+	goMod       = "go.mod"
+	goModBackup = "go.mod.backup"
+)
 
 // Update is exported
-func (u *Updater) Update(path string, updateType internal.UpdateType) (map[string]internal.CheckResult, error) {
+func (u *Updater) Update(path string) (map[string]internal.CheckResult, error) {
 	absolutePath, err := filepath.Abs(path)
 	if err != nil {
 		return nil, err
 	}
 
 	absoluteFile := filepath.Join(absolutePath, goMod)
+	backupFile := filepath.Join(absolutePath, goModBackup)
 
 	content, err := ioutil.ReadFile(absoluteFile)
 	if err != nil {
@@ -38,38 +41,42 @@ func (u *Updater) Update(path string, updateType internal.UpdateType) (map[strin
 	}
 
 	filter := getLatestVersion
-	if updateType == internal.Minor {
-		filter = getLatestMinorVersion
-	}
 
 	latestMinors, err := getModAndFilter(u.Ctx, absolutePath, filter)
 	if err != nil {
 		return nil, err
 	}
 
-	var updates []*modfile.Require
+	updates := 0
 
 	for moduleName, result := range latestMinors {
 		if result.Error == nil && result.LatestVersion.GreaterThan(result.LocalVersion) {
-			updates = append(updates, &modfile.Require{
-				Mod: module.Version{
-					Path:    moduleName,
-					Version: result.LatestVersion.Original(),
-				},
-				Indirect: false,
-			})
+			err := parse.DropRequire(moduleName)
+			if err != nil {
+				return nil, err
+			}
+
+			err = parse.AddRequire(moduleName, result.LatestVersion.Original())
+			if err != nil {
+				return nil, err
+			}
+
+			updates++
 		}
 	}
 
-	if len(updates) > 0 {
-		parse.SetRequire(updates)
-
+	if updates > 0 {
 		format, err := parse.Format()
 		if err != nil {
 			return nil, err
 		}
 
 		err = ioutil.WriteFile(absoluteFile, format, 0666)
+		if err != nil {
+			return nil, err
+		}
+
+		err = ioutil.WriteFile(backupFile, content, 0666)
 		if err != nil {
 			return nil, err
 		}
