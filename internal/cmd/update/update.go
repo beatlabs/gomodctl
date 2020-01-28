@@ -67,7 +67,7 @@ func (o *Options) Execute(updater Updater) {
 
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"Module", "Previous", "Now"})
-	table.SetFooter([]string{"", "number of packages", strconv.Itoa(len(checkResults))})
+	table.SetFooter([]string{"", "number of modules", strconv.Itoa(len(checkResults))})
 	table.SetBorder(false)
 	table.AppendBulk(data)
 	table.Render()

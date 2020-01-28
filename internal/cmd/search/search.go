@@ -85,10 +85,9 @@ func (o *Options) Execute(op Searcher) {
 		})
 	}
 
-	fmt.Printf("No match found for search term \"%s\"\n", o.Term)
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"Name", "Stars", "Import count", "Score"})
-	table.SetFooter([]string{"", "", "number of packages", strconv.Itoa(len(limitedResults))})
+	table.SetFooter([]string{"", "", "number of modules", strconv.Itoa(len(limitedResults))})
 	table.SetBorder(false)
 	table.AppendBulk(data)
 	table.Render()
