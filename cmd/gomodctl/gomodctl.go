@@ -8,17 +8,15 @@ import (
 
 	"github.com/beatlabs/gomodctl/internal/cmd/check"
 	"github.com/beatlabs/gomodctl/internal/cmd/info"
+	licensecmd "github.com/beatlabs/gomodctl/internal/cmd/license"
 	"github.com/beatlabs/gomodctl/internal/cmd/search"
 	updatecmd "github.com/beatlabs/gomodctl/internal/cmd/update"
 	"github.com/beatlabs/gomodctl/internal/godoc"
+	"github.com/beatlabs/gomodctl/internal/license"
 	"github.com/beatlabs/gomodctl/internal/module"
-	"github.com/spf13/cobra"
-
 	homedir "github.com/mitchellh/go-homedir"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-
-	"github.com/beatlabs/gomodctl/internal/cmd/info"
-	"github.com/beatlabs/gomodctl/internal/cmd/search"
 )
 
 var ro RootOptions
@@ -85,7 +83,7 @@ func Execute() {
 	rootCmd.AddCommand(info.NewCmdInfo(gd))
 	rootCmd.AddCommand(check.NewCmdCheck(&checker))
 	rootCmd.AddCommand(updatecmd.NewCmdUpdate(&updater))
-	rootCmd.AddCommand(cmdlicense.NewCmdLicense(licenseChecker))
+	rootCmd.AddCommand(licensecmd.NewCmdLicense(licenseChecker))
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
