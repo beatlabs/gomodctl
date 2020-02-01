@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"strconv"
-	"time"
 
 	"github.com/beatlabs/gomodctl/internal"
 	"github.com/olekukonko/tablewriter"
@@ -49,7 +48,6 @@ func NewCmdInfo(ig Infoer) *cobra.Command {
 
 // Execute is exported.
 func (o *Options) Execute(ig Infoer) {
-	time.Sleep(time.Minute)
 	searchResults, err := ig.Search(o.Term)
 	if err != nil {
 		fmt.Println(err)
