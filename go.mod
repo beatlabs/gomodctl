@@ -4,6 +4,8 @@ go 1.13
 
 require (
 	github.com/Masterminds/semver v1.5.0
+	github.com/elastic/go-elasticsearch/v6 v6.8.5 // indirect
+	github.com/ernesto-jimenez/gogen v0.0.0-20180125220232-d7d4131e6607 // indirect
 	github.com/go-resty/resty/v2 v2.1.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/olekukonko/tablewriter v0.0.4

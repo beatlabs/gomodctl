@@ -2,7 +2,10 @@ package module
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
+	"os/exec"
 	"sort"
 
 	"github.com/Masterminds/semver"
@@ -15,6 +18,11 @@ var ErrNoVersionAvailable = errors.New("no version available")
 // Checker is exported
 type Checker struct {
 	Ctx context.Context
+}
+
+// Check is exported
+func (c *Checker) VulnerabilitiesCheck(path string, vulnerabilityCheck bool) (map[string]internal.VulnerabilityResult, error) {
+	return getModAndVulnerabilitiesCheck(c.Ctx, path, vulnerabilityCheck)
 }
 
 // Check is exported
@@ -32,6 +40,27 @@ func getLatestVersion(_ *semver.Version, versions []*semver.Version) (*semver.Ve
 	lastVersion := versions[len(versions)-1]
 
 	return lastVersion, nil
+}
+
+func vulnerabilityCheckFn(ctx context.Context, packages []packageResult) map[string]internal.VulnerabilityResult {
+
+	result := make(map[string]internal.VulnerabilityResult)
+
+	for _, r := range packages {
+		fmt.Println("Scan: " + r.dir)
+		goSecDir := r.dir + "/./..."
+		arg := []string{"-quiet", "-fmt=json", goSecDir}
+		cmd := exec.CommandContext(ctx, "/Users/thomaschavakis/go/bin/gosec", arg...)
+		out, _ := cmd.CombinedOutput()
+		output := string(out)
+		var vr internal.VulnerabilityResult
+		err := json.Unmarshal([]byte(output), &vr)
+		if err != nil {
+			result[r.path] = vr
+		}
+		result[r.path] = vr
+	}
+	return result
 }
 
 func getModAndFilter(ctx context.Context, path string, filter func(*semver.Version, []*semver.Version) (*semver.Version, error)) (map[string]internal.CheckResult, error) {
@@ -63,4 +92,18 @@ func getModAndFilter(ctx context.Context, path string, filter func(*semver.Versi
 	}
 
 	return checkResults, nil
+}
+
+func getModAndVulnerabilitiesCheck(ctx context.Context, path string, vulnerabilityCheck bool) (map[string]internal.VulnerabilityResult, error) {
+	parser := versionParser{ctx: ctx}
+	vs := make(map[string]internal.VulnerabilityResult)
+	results, err := parser.Parse(path)
+	if err != nil {
+		return nil, err
+	}
+
+	if vulnerabilityCheck {
+		vs = vulnerabilityCheckFn(ctx, results)
+	}
+	return vs, nil
 }
