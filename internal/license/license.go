@@ -1,9 +1,11 @@
 package license
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 
@@ -12,6 +14,8 @@ import (
 	"github.com/google/licenseclassifier"
 	"github.com/mholt/archiver/v3"
 )
+
+const invalidLicense = "Can't find license"
 
 // Checker is exported
 type Checker struct {
@@ -45,6 +49,10 @@ func (f *Checker) Type(moduleName, version string) (string, error) {
 		return "", err
 	}
 
+	if !response.IsSuccess() {
+		return "", errors.New(response.String())
+	}
+
 	tempZipName := fmt.Sprintf("%s-%s.*.zip", strings.ReplaceAll(moduleName, "/", ""), v.Original())
 
 	tempFile, err := ioutil.TempFile("", tempZipName)
@@ -63,7 +71,7 @@ func (f *Checker) Type(moduleName, version string) (string, error) {
 		return "", err
 	}
 
-	match := ""
+	match := invalidLicense
 	err = archiver.Walk(tempFile.Name(), func(file archiver.File) error {
 		if strings.HasPrefix(file.Name(), "LICENSE") {
 			b, err := ioutil.ReadAll(file)
@@ -124,7 +132,15 @@ func createGoProxyURLForLatestVersion(moduleName string) string {
 }
 
 func createGoProxyURLForVersion(moduleName string, version *semver.Version) string {
-	return fmt.Sprintf("%s/%s/@v/%s.zip", getGoProxy(), moduleName, version.Original())
+	return fmt.Sprintf("%s/%s/@v/%s.zip", getGoProxy(), encodeModuleName(moduleName), version.Original())
+}
+
+func encodeModuleName(moduleName string) string {
+	regExp := regexp.MustCompile(`[[:upper:]]`)
+
+	return regExp.ReplaceAllStringFunc(moduleName, func(s string) string {
+		return "!" + strings.ToLower(s)
+	})
 }
 
 func getGoProxy() string {
