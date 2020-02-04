@@ -120,6 +120,10 @@ func (f *Checker) getLatestVersion(moduleName string) (*semver.Version, error) {
 		return nil, err
 	}
 
+	if !response.IsSuccess() {
+		return nil, errors.New(response.String())
+	}
+
 	if resp.Version == "" {
 		return nil, fmt.Errorf("no version available, %s", response.String())
 	}
@@ -144,12 +148,24 @@ func encodeModuleName(moduleName string) string {
 }
 
 func getGoProxy() string {
-	goProxy := os.Getenv("GOPROXY")
-	if len(goProxy) == 0 || goProxy == "direct" {
+	goProxyEnv := os.Getenv("GOPROXY")
+
+	goProxies := strings.Split(goProxyEnv, ",")
+
+	n := 0
+	for _, x := range goProxies {
+		if x != "direct" && strings.TrimSpace(x) != "" {
+			goProxies[n] = x
+			n++
+		}
+	}
+	goProxies = goProxies[:n]
+
+	if len(goProxies) == 0 {
 		return "https://proxy.golang.org"
 	}
 
-	return goProxy
+	return goProxies[0]
 }
 
 type response struct {
