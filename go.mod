@@ -5,6 +5,8 @@ go 1.13
 require (
 	github.com/Masterminds/semver v1.5.0
 	github.com/go-resty/resty/v2 v2.1.0
+	github.com/google/licenseclassifier v0.0.0-20200108231022-9dfa8d8474eb
+	github.com/mholt/archiver/v3 v3.3.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/olekukonko/tablewriter v0.0.4
 	github.com/spf13/cobra v0.0.5

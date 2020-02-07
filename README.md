@@ -8,6 +8,7 @@ Currently supported commands:
 - info - search by the given term and show information about the matched package
 - check - check project dependencies for the version information and shows outdated packages
 - update - automatically sync project dependencies with their latest version
+- license - fetch license of a module with/without version
 
 ## Installation
 
@@ -145,6 +146,22 @@ Your dependencies updated to latest minor and go.mod.backup created
 ----------------------------------+---------------------+----------------------
                                      NUMBER OF MODULES  |          7
                                   ----------------------+----------------------
+```
+
+### gomodctl license <modulename> <version>
+
+Fetch license of a module, version is optional
+
+Command:
+
+```shell script
+gomodctl license github.com/beatlabs/patron
+```
+
+Result:
+
+```shell script
+Apache-2.0
 ```
 
 ## Code of conduct
