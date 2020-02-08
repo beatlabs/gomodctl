@@ -5,8 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"os/exec"
 	"sort"
+	"sync"
 
 	"github.com/Masterminds/semver"
 	"github.com/beatlabs/gomodctl/internal"
@@ -21,8 +23,8 @@ type Checker struct {
 }
 
 // Check is exported
-func (c *Checker) VulnerabilitiesCheck(path string, vulnerabilityCheck bool) (map[string]internal.VulnerabilityResult, error) {
-	return getModAndVulnerabilitiesCheck(c.Ctx, path, vulnerabilityCheck)
+func (c *Checker) VulnerabilitiesCheck(path string, vulnerabilityCheck bool, jsonOutputCheck bool) (map[string]internal.VulnerabilityResult, error) {
+	return getModAndVulnerabilitiesCheck(c.Ctx, path, vulnerabilityCheck, jsonOutputCheck)
 }
 
 // Check is exported
@@ -42,25 +44,42 @@ func getLatestVersion(_ *semver.Version, versions []*semver.Version) (*semver.Ve
 	return lastVersion, nil
 }
 
-func vulnerabilityCheckFn(ctx context.Context, packages []packageResult) map[string]internal.VulnerabilityResult {
+func CheckForVulnerabilities(ctx context.Context, packages []packageResult) map[string]internal.VulnerabilityResult {
 
-	result := make(map[string]internal.VulnerabilityResult)
+	var (
+		wg     sync.WaitGroup
+		mu     sync.Mutex
+		result map[string]internal.VulnerabilityResult
+	)
 
-	for _, r := range packages {
-		fmt.Println("Scan: " + r.dir)
-		goSecDir := r.dir + "/./..."
-		arg := []string{"-quiet", "-fmt=json", goSecDir}
-		cmd := exec.CommandContext(ctx, "/Users/thomaschavakis/go/bin/gosec", arg...)
-		out, _ := cmd.CombinedOutput()
-		output := string(out)
-		var vr internal.VulnerabilityResult
-		err := json.Unmarshal([]byte(output), &vr)
-		if err != nil {
-			result[r.path] = vr
-		}
-		result[r.path] = vr
+	doneCh := make(chan bool, 1)
+	wg.Add(len(packages))
+	result = make(map[string]internal.VulnerabilityResult, 0)
+	for i := 0; i < len(packages); i++ {
+		go func(i int) {
+			defer wg.Done()
+			goSecDir := packages[i].dir + "/./..."
+			arg := []string{"-quiet", "-fmt=json", goSecDir}
+			cmd := exec.CommandContext(ctx, "gosec", arg...)
+			out, _ := cmd.CombinedOutput()
+			output := string(out)
+			var vr internal.VulnerabilityResult
+			err := json.Unmarshal([]byte(output), &vr)
+			if err == nil {
+				mu.Lock()
+				result[packages[i].path] = vr
+				mu.Unlock()
+			}
+		}(i)
 	}
-	return result
+	go func() {
+		wg.Wait()
+		close(doneCh)
+	}()
+	select {
+	case <-doneCh:
+		return result
+	}
 }
 
 func getModAndFilter(ctx context.Context, path string, filter func(*semver.Version, []*semver.Version) (*semver.Version, error)) (map[string]internal.CheckResult, error) {
@@ -94,7 +113,7 @@ func getModAndFilter(ctx context.Context, path string, filter func(*semver.Versi
 	return checkResults, nil
 }
 
-func getModAndVulnerabilitiesCheck(ctx context.Context, path string, vulnerabilityCheck bool) (map[string]internal.VulnerabilityResult, error) {
+func getModAndVulnerabilitiesCheck(ctx context.Context, path string, vulnerabilityCheck bool, jsonOutputCheck bool) (map[string]internal.VulnerabilityResult, error) {
 	parser := versionParser{ctx: ctx}
 	vs := make(map[string]internal.VulnerabilityResult)
 	results, err := parser.Parse(path)
@@ -103,7 +122,17 @@ func getModAndVulnerabilitiesCheck(ctx context.Context, path string, vulnerabili
 	}
 
 	if vulnerabilityCheck {
-		vs = vulnerabilityCheckFn(ctx, results)
+		vs = CheckForVulnerabilities(ctx, results)
+		if jsonOutputCheck {
+			r, err := json.Marshal(vs)
+			if err != nil {
+				fmt.Println(err)
+			}
+			err = ioutil.WriteFile("output.json", r, 0644)
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
 	}
 	return vs, nil
 }

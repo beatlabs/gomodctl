@@ -118,6 +118,37 @@ Result:
                                   ----------------------+----------------------
 ```
 
+Check for vulnerabilities
+
+Command:
+
+```shell script
+gomodctl check -v -j
+
+-v : vulnerability check
+-j : create an output json file
+```
+
+Result
+```shell script
+               MODULE               | CONFIDENCE | SEVERITY |                       CWE                       |                                     LINE,COLUMN
+------------------------------------+------------+----------+-------------------------------------------------+---------------------------------------------------------------------------------------
+  github.com/go-resty/resty/v2      | HIGH       | MEDIUM   | https://cwe.mitre.org/data/definitions/22.html  | /go/pkg/mod/github.com/go-resty/resty/v2@v2.1.0/client.go
+                                    |            |          |                                                 | ln:590 | col:22  ioutil.ReadFile(pemFilePath)
+------------------------------------+------------+----------+-------------------------------------------------+---------------------------------------------------------------------------------------
+  github.com/go-resty/resty/v2      | HIGH       | MEDIUM   | https://cwe.mitre.org/data/definitions/22.html  | /go/pkg/mod/github.com/go-resty/resty/v2@v2.1.0/util.go
+                                    |            |          |                                                 | ln:216 | col:15  os.Open(path)
+------------------------------------+------------+----------+-------------------------------------------------+---------------------------------------------------------------------------------------
+  github.com/go-resty/resty/v2      | HIGH       | MEDIUM   | https://cwe.mitre.org/data/definitions/276.html | /go/pkg/mod/github.com/go-resty/resty/v2@v2.1.0/util.go
+                                    |            |          |                                                 | ln:259 | col:13  os.MkdirAll(dir, 0755)
+------------------------------------+------------+----------+-------------------------------------------------+---------------------------------------------------------------------------------------
+  github.com/olekukonko/tablewriter | HIGH       | MEDIUM   | https://cwe.mitre.org/data/definitions/22.html  | /go/pkg/mod/github.com/olekukonko/tablewriter@v0.0.4/csv.go
+                                    |            |          |                                                 | ln:19 | col:15  os.Open(fileName)
+------------------------------------+------------+----------+-------------------------------------------------+---------------------------------------------------------------------------------------
+  github.com/olekukonko/tablewriter | HIGH       | LOW      | https://cwe.mitre.org/data/definitions/703.html | /go/pkg/mod/github.com/olekukonko/tablewriter@v0.0.4/table.go
+                                    |            |          |                                                 | ln:782 | col:3  tmpWriter.WriteTo(t.out)
+```
+
 ### gomodctl update
 
 Update module versions to latest minor
