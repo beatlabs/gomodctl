@@ -27,7 +27,7 @@ type VulnerabilityResult struct {
 		Line       string `json:"line"`
 		Column     string `json:"column"`
 		Details    string `json:"details"`
-		RuleId     string `json:"rule_id"`
+		RuleID     string `json:"rule_id"`
 		Severity   string `json:"severity"`
 		Confidence string `json:"confidence"`
 		Cwe        struct {

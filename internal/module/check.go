@@ -22,12 +22,12 @@ type Checker struct {
 	Ctx context.Context
 }
 
-// Check is exported
+// VulnerabilitiesCheck is exported
 func (c *Checker) VulnerabilitiesCheck(path string, vulnerabilityCheck bool, jsonOutputCheck bool) (map[string]internal.VulnerabilityResult, error) {
 	return getModAndVulnerabilitiesCheck(c.Ctx, path, vulnerabilityCheck, jsonOutputCheck)
 }
 
-// Check is exported
+// Check is exported.
 func (c *Checker) Check(path string) (map[string]internal.CheckResult, error) {
 	return getModAndFilter(c.Ctx, path, getLatestVersion)
 }
@@ -44,6 +44,7 @@ func getLatestVersion(_ *semver.Version, versions []*semver.Version) (*semver.Ve
 	return lastVersion, nil
 }
 
+// CheckForVulnerabilities function check for possible vulnerabilities.
 func CheckForVulnerabilities(ctx context.Context, packages []packageResult) map[string]internal.VulnerabilityResult {
 
 	var (
