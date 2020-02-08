@@ -20,7 +20,7 @@ jobs:
 
     - name: Linter
       run: |
-        docker run --rm -v $(pwd):/data cytopia/golint -set_exit_status=1 ./...
+        docker run --rm -v $(pwd):/data cytopia/golint -set_exit_status=1 ./... | grep -v tools.go
 
     - name: Test & Publish
       run: |
