@@ -56,11 +56,18 @@ func (o *Options) Execute(checker Checker) {
 	var data [][]string
 
 	for name, result := range checkResults {
-		data = append(data, []string{
+		r := []string{
 			name,
 			result.LocalVersion.Original(),
-			result.LatestVersion.Original(),
-		})
+		}
+
+		if result.Error != nil {
+			r = append(r, fmt.Sprintf("failed because of: %s", result.Error.Error()))
+		} else {
+			r = append(r, result.LatestVersion.Original())
+		}
+
+		data = append(data, r)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
