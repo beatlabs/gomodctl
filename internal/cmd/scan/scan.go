@@ -53,11 +53,11 @@ func (o *Options) Execute(scanner Scanner) {
 		fmt.Println(err)
 		return
 	}
-	RenderResults(vulnerabilitiesResult)
+	renderResults(vulnerabilitiesResult)
 }
 
-// RenderResults renders the vulnerabilities.
-func RenderResults(vulnerabilitiesResult map[string]internal.VulnerabilityResult) {
+// renderResults renders the vulnerabilities.
+func renderResults(vulnerabilitiesResult map[string]internal.VulnerabilityResult) {
 	var data [][]string
 	for name, result := range vulnerabilitiesResult {
 		for _, issue := range result.Issues {

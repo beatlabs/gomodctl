@@ -53,10 +53,10 @@ func (o *Options) Execute(checker Checker) {
 		fmt.Println(err)
 		return
 	}
-	checkResultsRender(checkResults)
+	renderResults(checkResults)
 }
 
-func checkResultsRender(checkResults map[string]internal.CheckResult) {
+func renderResults(checkResults map[string]internal.CheckResult) {
 
 	var data [][]string
 
