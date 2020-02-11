@@ -9,6 +9,7 @@ import (
 	"github.com/beatlabs/gomodctl/internal/cmd/check"
 	"github.com/beatlabs/gomodctl/internal/cmd/info"
 	licensecmd "github.com/beatlabs/gomodctl/internal/cmd/license"
+	scancmd "github.com/beatlabs/gomodctl/internal/cmd/scan"
 	"github.com/beatlabs/gomodctl/internal/cmd/search"
 	updatecmd "github.com/beatlabs/gomodctl/internal/cmd/update"
 	"github.com/beatlabs/gomodctl/internal/godoc"
@@ -73,6 +74,7 @@ func Execute() {
 	checker := module.Checker{Ctx: ctx}
 	updater := module.Updater{Ctx: ctx}
 	licenseChecker, err := license.NewChecker()
+	scanner := module.Scanner{Ctx: ctx}
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -84,6 +86,7 @@ func Execute() {
 	rootCmd.AddCommand(check.NewCmdCheck(&checker))
 	rootCmd.AddCommand(updatecmd.NewCmdUpdate(&updater))
 	rootCmd.AddCommand(licensecmd.NewCmdLicense(licenseChecker))
+	rootCmd.AddCommand(scancmd.NewCmdScan(&scanner))
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)

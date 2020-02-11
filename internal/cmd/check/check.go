@@ -12,7 +12,6 @@ import (
 
 // Checker is exported.
 type Checker interface {
-	VulnerabilitiesCheck(path string, vulnerabilityCheck bool, jsonOutputCheck bool) (map[string]internal.VulnerabilityResult, error)
 	Check(path string) (map[string]internal.CheckResult, error)
 }
 
@@ -39,62 +38,22 @@ func NewCmdCheck(checker Checker) *cobra.Command {
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			f, _ := cmd.Flags().GetBool("vulnerabilities")
-			j, _ := cmd.Flags().GetBool("json")
-			o.Execute(checker, f, j)
+			o.Execute(checker)
 		},
 	}
-
-	cmd.Flags().BoolP("vulnerabilities", "v", false, "Check for vulnerabilities")
-	cmd.Flags().BoolP("json", "j", false, "output to a json file")
 
 	return cmd
 }
 
 // Execute is exported.
-func (o *Options) Execute(checker Checker, vulnerabilitiesCheck bool, jsonOutputCheck bool) {
+func (o *Options) Execute(checker Checker) {
 	var checkResults map[string]internal.CheckResult
-	var err error
-	var vulnerabilitiesResult map[string]internal.VulnerabilityResult
-
-	if vulnerabilitiesCheck {
-		vulnerabilitiesResult, err = checker.VulnerabilitiesCheck(o.Path, vulnerabilitiesCheck, jsonOutputCheck)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		vulnerabilitiesResultsRender(vulnerabilitiesResult)
-	} else {
-		checkResults, err = checker.Check(o.Path)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		checkResultsRender(checkResults)
+	checkResults, err := checker.Check(o.Path)
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
-}
-
-func vulnerabilitiesResultsRender(vulnerabilitiesResult map[string]internal.VulnerabilityResult) {
-	var data [][]string
-	for name, result := range vulnerabilitiesResult {
-		for _, issue := range result.Issues {
-			data = append(data, []string{
-				name,
-				issue.Confidence,
-				issue.Severity,
-				issue.Cwe.URL,
-				fmt.Sprintf("%s\nln:%s | col:%s \n%s", issue.File, issue.Line, issue.Column, issue.Code),
-			})
-		}
-	}
-
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Module", "Confidence", "Severity", "CWE", "Line,Column"})
-	table.SetBorder(false)
-	table.SetRowLine(true)
-	table.SetRowSeparator("-")
-	table.AppendBulk(data)
-	table.Render()
+	checkResultsRender(checkResults)
 }
 
 func checkResultsRender(checkResults map[string]internal.CheckResult) {

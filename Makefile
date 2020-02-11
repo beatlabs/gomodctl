@@ -8,7 +8,7 @@ build:
 
 .PHONY: lint
 lint:
-	golint -set_exit_status=1 `go list ./...` | grep -v tools
+	golint -set_exit_status=1 `go list ./... | grep -v tools`
 
 .PHONY: test
 test:
