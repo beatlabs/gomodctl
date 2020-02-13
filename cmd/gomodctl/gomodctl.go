@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"syscall"
 
 	"github.com/beatlabs/gomodctl/internal/cmd/check"
 	"github.com/beatlabs/gomodctl/internal/cmd/info"
@@ -44,18 +45,13 @@ type RootOptions struct {
 func Execute() {
 	ctx, cancel := context.WithCancel(context.Background())
 
-	c := make(chan os.Signal, 1)
+	signals := make(chan os.Signal, 1)
 
-	signal.Notify(c, os.Interrupt)
-
-	defer func() {
-		signal.Stop(c)
-		cancel()
-	}()
+	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
 		select {
-		case <-c:
+		case <-signals:
 			cancel()
 		case <-ctx.Done():
 		}
