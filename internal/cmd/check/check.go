@@ -25,7 +25,7 @@ func NewCmdCheck(checker Checker) *cobra.Command {
 	o := Options{}
 
 	cmd := &cobra.Command{
-		Use:   "check [module name] [OPTIONS]",
+		Use:   "check [module name]",
 		Short: "check local module for updates",
 		Long:  `get list of local module and check them for updates`,
 		Args: func(cmd *cobra.Command, args []string) error {
@@ -47,35 +47,27 @@ func NewCmdCheck(checker Checker) *cobra.Command {
 
 // Execute is exported.
 func (o *Options) Execute(checker Checker) {
-	var checkResults map[string]internal.CheckResult
 	checkResults, err := checker.Check(o.Path)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	renderResults(checkResults)
-}
-
-func renderResults(checkResults map[string]internal.CheckResult) {
 
 	var data [][]string
 
 	for name, result := range checkResults {
-
-		var localVersion = ""
-		if result.LocalVersion != nil {
-			localVersion = result.LocalVersion.Original()
-		}
-		var latestVersion = ""
-		if result.LatestVersion != nil {
-			latestVersion = result.LatestVersion.Original()
-		}
-
-		data = append(data, []string{
+		r := []string{
 			name,
-			localVersion,
-			latestVersion,
-		})
+			result.LocalVersion.Original(),
+		}
+
+		if result.Error != nil {
+			r = append(r, fmt.Sprintf("failed because of: %s", result.Error.Error()))
+		} else {
+			r = append(r, result.LatestVersion.Original())
+		}
+
+		data = append(data, r)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)

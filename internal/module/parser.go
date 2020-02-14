@@ -3,9 +3,10 @@ package module
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os/exec"
+	"path/filepath"
 	"regexp"
-	"strings"
 
 	"github.com/Masterminds/semver"
 	"github.com/spf13/viper"
@@ -38,19 +39,17 @@ type packageResult struct {
 func (v *versionParser) Parse(path string) ([]packageResult, error) {
 	cmd := exec.CommandContext(v.ctx, "go", "list", "-m", "-versions", "-json", "all")
 
-	home := viper.GetString("home")
 	if path != "" {
-		if home != "" && strings.Contains(path, "~") {
-			path = home + strings.Replace(path, "~", "", 1) + "/"
-		} else {
-			path = path + "/"
-		}
-
-		cmd.Dir = path
+		home := viper.GetString("home")
+		cmd.Dir = filepath.Join(home, path)
 	}
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {
+		if len(out) > 0 {
+			return nil, fmt.Errorf("with output [%s] %w", out, err)
+		}
+
 		return nil, err
 	}
 

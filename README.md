@@ -195,6 +195,10 @@ Result:
 Apache-2.0
 ```
 
+## How to configure for private modules
+
+Since check and update rely on go toolchain, if you have any private module that isn't publicly accessible, don't forget to set up your environment variables. For more information and how to configure, please check [Module configuration for non-public modules](https://golang.org/cmd/go/#hdr-Module_configuration_for_non_public_modules).
+
 ## Code of conduct
 
 Please note that this project is released with a [Contributor Code of Conduct](https://github.com/beatlabs/gomodctl/blob/master/CODE_OF_CONDUCT.md). By participating in this project and its community you agree to abide by those terms.
