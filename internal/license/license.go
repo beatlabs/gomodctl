@@ -1,5 +1,7 @@
 package license
 
+//go:generate go run license_embedder.go
+
 import (
 	"errors"
 	"fmt"
@@ -25,7 +27,7 @@ type Checker struct {
 
 // NewChecker is exported
 func NewChecker() (*Checker, error) {
-	license, err := licenseclassifier.New(licenseclassifier.DefaultConfidenceThreshold)
+	license, err := licenseclassifier.New(licenseclassifier.DefaultConfidenceThreshold, licenseclassifier.ArchiveBytes(licenseDB))
 	if err != nil {
 		return nil, err
 	}
