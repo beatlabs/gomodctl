@@ -2,6 +2,12 @@
 
 package main
 
+//We need to embed the license database to detect licenses.
+//There is a lot of file embedding libraries mentioned in https://tech.townsourced.com/post/embedding-static-files-in-go/ and https://github.com/avelino/awesome-go#resource-embedding.
+//If static files you want to embed are in your project, it is easy. But they aren't easy to use for our case because the file we want to embed is inside a module.
+//Also, the license checker has a function that returns file as byte slice.
+//So we took some inspiration from https://github.com/flazz/togo and modified a little for our use case.
+
 import (
 	"bytes"
 	"go/format"
