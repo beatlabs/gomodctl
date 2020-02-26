@@ -1,6 +1,7 @@
 package godoc
 
 import (
+	"context"
 	"errors"
 
 	"github.com/beatlabs/gomodctl/internal"
@@ -21,11 +22,12 @@ type response struct {
 // Client is exported.
 type Client struct {
 	restClient *resty.Client
+	ctx        context.Context
 }
 
 // NewClient is exported.
-func NewClient() *Client {
-	return &Client{restClient: resty.New()}
+func NewClient(ctx context.Context) *Client {
+	return &Client{restClient: resty.New(), ctx: ctx}
 }
 
 // Search is exported.
@@ -37,6 +39,7 @@ func (c *Client) Search(term string) ([]internal.SearchResult, error) {
 	resp := &response{}
 
 	_, err := c.restClient.R().
+		SetContext(c.ctx).
 		SetQueryParams(map[string]string{
 			"q": term,
 		}).
@@ -71,6 +74,7 @@ func (c *Client) Info(path string) (string, error) {
 	}
 
 	resp, err := c.restClient.R().
+		SetContext(c.ctx).
 		SetHeader("Accept", "text/plain").
 		Get("https://godoc.org/" + path)
 

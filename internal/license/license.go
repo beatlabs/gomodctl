@@ -3,6 +3,7 @@ package license
 //go:generate go run license_embedder.go
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -23,10 +24,11 @@ const invalidLicense = "Can't find license"
 type Checker struct {
 	classifier *licenseclassifier.License
 	restClient *resty.Client
+	ctx        context.Context
 }
 
 // NewChecker is exported
-func NewChecker() (*Checker, error) {
+func NewChecker(ctx context.Context) (*Checker, error) {
 	license, err := licenseclassifier.New(licenseclassifier.DefaultConfidenceThreshold, licenseclassifier.ArchiveBytes(licenseDB))
 	if err != nil {
 		return nil, err
@@ -35,6 +37,7 @@ func NewChecker() (*Checker, error) {
 	return &Checker{
 		classifier: license,
 		restClient: resty.New(),
+		ctx:        ctx,
 	}, nil
 }
 
@@ -46,6 +49,7 @@ func (f *Checker) Type(moduleName, version string) (string, error) {
 	}
 
 	response, err := f.restClient.R().
+		SetContext(f.ctx).
 		Get(createGoProxyURLForVersion(moduleName, v))
 	if err != nil {
 		return "", err
@@ -115,6 +119,7 @@ func (f *Checker) getLatestVersion(moduleName string) (*semver.Version, error) {
 	resp := &response{}
 
 	response, err := f.restClient.R().
+		SetContext(f.ctx).
 		SetHeader("Accept", "application/json").
 		SetResult(resp).
 		Get(createGoProxyURLForLatestVersion(moduleName))
