@@ -17,7 +17,7 @@ type Checker struct {
 	Ctx context.Context
 }
 
-// Check is exported
+// Check is exported.
 func (c *Checker) Check(path string) (map[string]internal.CheckResult, error) {
 	return getModAndFilter(c.Ctx, path, getLatestVersion)
 }

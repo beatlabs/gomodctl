@@ -25,7 +25,7 @@ func NewCmdCheck(checker Checker) *cobra.Command {
 	o := Options{}
 
 	cmd := &cobra.Command{
-		Use:   "check",
+		Use:   "check [module name]",
 		Short: "check local module for updates",
 		Long:  `get list of local module and check them for updates`,
 		Args: func(cmd *cobra.Command, args []string) error {

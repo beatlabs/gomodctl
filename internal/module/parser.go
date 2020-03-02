@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"github.com/Masterminds/semver"
 	"github.com/spf13/viper"
@@ -41,7 +42,13 @@ func (v *versionParser) Parse(path string) ([]packageResult, error) {
 
 	if path != "" {
 		home := viper.GetString("home")
-		cmd.Dir = filepath.Join(home, path)
+
+		if strings.HasPrefix(path, home) {
+			l := path[len(home):]
+			cmd.Dir = filepath.Join(home, l)
+		} else {
+			cmd.Dir = filepath.Join(home, path)
+		}
 	}
 
 	out, err := cmd.CombinedOutput()
