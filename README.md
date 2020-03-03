@@ -120,35 +120,32 @@ Result:
                                   ----------------------+----------------------
 ```
 
-Check for vulnerabilities
+### gomodctl scan
+
+Scan for vulnerabilities using the tool [gosec](https://github.com/securego/gosec)
 
 Command:
 
 ```shell script
-gomodctl check -v -j
-
--v : vulnerability check
--j : create an output json file
+gomodctl scan
 ```
 
 Result
 ```shell script
-               MODULE               | CONFIDENCE | SEVERITY |                       CWE                       |                                     LINE,COLUMN
-------------------------------------+------------+----------+-------------------------------------------------+---------------------------------------------------------------------------------------
-  github.com/go-resty/resty/v2      | HIGH       | MEDIUM   | https://cwe.mitre.org/data/definitions/22.html  | /go/pkg/mod/github.com/go-resty/resty/v2@v2.1.0/client.go
-                                    |            |          |                                                 | ln:590 | col:22  ioutil.ReadFile(pemFilePath)
-------------------------------------+------------+----------+-------------------------------------------------+---------------------------------------------------------------------------------------
-  github.com/go-resty/resty/v2      | HIGH       | MEDIUM   | https://cwe.mitre.org/data/definitions/22.html  | /go/pkg/mod/github.com/go-resty/resty/v2@v2.1.0/util.go
-                                    |            |          |                                                 | ln:216 | col:15  os.Open(path)
-------------------------------------+------------+----------+-------------------------------------------------+---------------------------------------------------------------------------------------
-  github.com/go-resty/resty/v2      | HIGH       | MEDIUM   | https://cwe.mitre.org/data/definitions/276.html | /go/pkg/mod/github.com/go-resty/resty/v2@v2.1.0/util.go
-                                    |            |          |                                                 | ln:259 | col:13  os.MkdirAll(dir, 0755)
-------------------------------------+------------+----------+-------------------------------------------------+---------------------------------------------------------------------------------------
-  github.com/olekukonko/tablewriter | HIGH       | MEDIUM   | https://cwe.mitre.org/data/definitions/22.html  | /go/pkg/mod/github.com/olekukonko/tablewriter@v0.0.4/csv.go
-                                    |            |          |                                                 | ln:19 | col:15  os.Open(fileName)
-------------------------------------+------------+----------+-------------------------------------------------+---------------------------------------------------------------------------------------
-  github.com/olekukonko/tablewriter | HIGH       | LOW      | https://cwe.mitre.org/data/definitions/703.html | /go/pkg/mod/github.com/olekukonko/tablewriter@v0.0.4/table.go
-                                    |            |          |                                                 | ln:782 | col:3  tmpWriter.WriteTo(t.out)
+                MODULE                | CONFIDENCE | SEVERITY |                       CWE                       |                                                                    LINE,COLUMN
+--------------------------------------+------------+----------+-------------------------------------------------+------------------------------------------------------------------------------------
+  github.com/mitchellh/go-homedir     | HIGH       | MEDIUM   | https://cwe.mitre.org/data/definitions/78.html  | /go/pkg/mod/github.com/mitchellh/go-homedir@v1.1.0/homedir.go
+                                      |            |          |                                                 | ln:114 | col:10  exec.Command("getent", "passwd", strconv.Itoa(os.Getuid()))
+--------------------------------------+------------+----------+-------------------------------------------------+------------------------------------------------------------------------------------
+  github.com/olekukonko/tablewriter   | HIGH       | MEDIUM   | https://cwe.mitre.org/data/definitions/22.html  | /go/pkg/mod/github.com/olekukonko/tablewriter@v0.0.4/csv.go
+                                      |            |          |                                                 | ln:19 | col:15  os.Open(fileName)
+--------------------------------------+------------+----------+-------------------------------------------------+------------------------------------------------------------------------------------
+  github.com/olekukonko/tablewriter   | HIGH       | LOW      | https://cwe.mitre.org/data/definitions/703.html | /go/pkg/mod/github.com/olekukonko/tablewriter@v0.0.4/table.go
+                                      |            |          |                                                 | ln:782 | col:3  tmpWriter.WriteTo(t.out)
+--------------------------------------+------------+----------+-------------------------------------------------+------------------------------------------------------------------------------------
+  github.com/stretchr/testify         | HIGH       | MEDIUM   | https://cwe.mitre.org/data/definitions/22.html  | /Users/thomaschavakis/go/pkg/mod/github.com/stretchr/testify@v1.4.0/_codegen/main.go
+                                      |            |          |                                                 | ln:184 | col:15  ioutil.ReadFile(path.Join(pd.SrcRoot, pd.ImportPath, fname))
+--------------------------------------+------------+----------+-------------------------------------------------+------------------------------------------------------------------------------------
 ```
 
 ### gomodctl update
