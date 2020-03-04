@@ -15,7 +15,7 @@ require (
 	github.com/olekukonko/tablewriter v0.0.4
 	github.com/pierrec/lz4 v2.4.1+incompatible // indirect
 	github.com/securego/gosec v0.0.0-20200129084146-17df5b370244
-	github.com/spf13/cobra v0.0.5
+	github.com/spf13/cobra v0.0.6
 	github.com/spf13/viper v1.5.0
 	github.com/stretchr/testify v1.4.0
 	golang.org/x/mod v0.2.0

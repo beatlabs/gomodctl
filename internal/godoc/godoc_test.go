@@ -1,6 +1,7 @@
 package godoc
 
 import (
+	"context"
 	"log"
 	"testing"
 
@@ -8,7 +9,7 @@ import (
 )
 
 func TestClient_Query(t *testing.T) {
-	client := NewClient()
+	client := NewClient(context.TODO())
 
 	response, err := client.Search("mock")
 
@@ -21,7 +22,7 @@ func TestClient_Query(t *testing.T) {
 }
 
 func TestClient_Info(t *testing.T) {
-	client := NewClient()
+	client := NewClient(context.TODO())
 
 	response, err := client.Info("patates")
 
@@ -30,7 +31,7 @@ func TestClient_Info(t *testing.T) {
 }
 
 func TestClient_Info2(t *testing.T) {
-	client := NewClient()
+	client := NewClient(context.TODO())
 
 	response, err := client.Info("github.com/stretchr/testify/mock")
 

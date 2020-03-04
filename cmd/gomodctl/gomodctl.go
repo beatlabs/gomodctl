@@ -66,10 +66,10 @@ func Execute() {
 
 	// fmt.Println("config:", ro.config, "registry:", ro.registry)
 
-	gd := godoc.NewClient()
+	gd := godoc.NewClient(ctx)
 	checker := module.Checker{Ctx: ctx}
 	updater := module.Updater{Ctx: ctx}
-	licenseChecker, err := license.NewChecker()
+	licenseChecker, err := license.NewChecker(ctx)
 	scanner := module.Scanner{Ctx: ctx}
 	if err != nil {
 		fmt.Println(err)
@@ -84,7 +84,7 @@ func Execute() {
 	rootCmd.AddCommand(licensecmd.NewCmdLicense(licenseChecker))
 	rootCmd.AddCommand(scancmd.NewCmdScan(&scanner))
 
-	if err := rootCmd.Execute(); err != nil {
+	if err := rootCmd.ExecuteContext(ctx); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}

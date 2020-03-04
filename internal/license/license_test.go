@@ -1,6 +1,7 @@
 package license
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -15,7 +16,7 @@ func TestLicenseTestSuite(t *testing.T) {
 }
 
 func (s *LicenseTestSuite) Test_GetLatestVersion() {
-	checker, _ := NewChecker()
+	checker, _ := NewChecker(context.TODO())
 
 	latestVersion, err := checker.getLatestVersion("github.com/beatlabs/patron")
 
@@ -27,7 +28,7 @@ func (s *LicenseTestSuite) Test_GetLatestVersion() {
 }
 
 func (s *LicenseTestSuite) Test_GetLatestVersionOfNonExistingPackage() {
-	checker, _ := NewChecker()
+	checker, _ := NewChecker(context.TODO())
 
 	_, err := checker.getLatestVersion("github.com/beatlabs/patro")
 
@@ -35,7 +36,7 @@ func (s *LicenseTestSuite) Test_GetLatestVersionOfNonExistingPackage() {
 }
 
 func (s *LicenseTestSuite) Test_GetLicenseOfLatest() {
-	checker, _ := NewChecker()
+	checker, _ := NewChecker(context.TODO())
 
 	latestVersion, err := checker.Type("github.com/beatlabs/patron", "")
 
@@ -44,7 +45,7 @@ func (s *LicenseTestSuite) Test_GetLicenseOfLatest() {
 }
 
 func (s *LicenseTestSuite) Test_GetLicenseOfNonExistingVersion() {
-	checker, _ := NewChecker()
+	checker, _ := NewChecker(context.TODO())
 
 	latestVersion, err := checker.Type("github.com/beatlabs/patron", "v999.0.0")
 
@@ -53,7 +54,7 @@ func (s *LicenseTestSuite) Test_GetLicenseOfNonExistingVersion() {
 }
 
 func (s *LicenseTestSuite) Test_GetLicenseOfv010() {
-	checker, _ := NewChecker()
+	checker, _ := NewChecker(context.TODO())
 
 	latestVersion, err := checker.Type("github.com/beatlabs/patron", "v0.1.0")
 

@@ -50,7 +50,7 @@ changelog:
     - '^docs:'
     - '^test:'
 release:
-  draft: true
+  draft: false
 brews:
  -
   github:
