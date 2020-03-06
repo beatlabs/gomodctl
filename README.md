@@ -1,4 +1,4 @@
-# gomodctl [![actions](https://github.com/beatlabs/gomodctl/workflows/gomodctl%20build/badge.svg)](https://github.com/beatlabs/gomodctl/actions) ![security_check](https://github.com/beatlabs/gomodctl/workflows/security_check/badge.svg)
+# gomodctl [![actions](https://github.com/beatlabs/gomodctl/workflows/gomodctl%20build/badge.svg)](https://github.com/beatlabs/gomodctl/actions) ![security_check](https://github.com/beatlabs/gomodctl/workflows/security_check/badge.svg) [![Go Report Card](https://goreportcard.com/badge/github.com/beatlabs/gomodctl)](https://goreportcard.com/report/github.com/beatlabs/gomodctl)
 
 
 *gomodctl* - search, check and update go modules.
