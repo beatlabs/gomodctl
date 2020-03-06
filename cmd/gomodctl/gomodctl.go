@@ -16,7 +16,7 @@ import (
 	"github.com/beatlabs/gomodctl/internal/godoc"
 	"github.com/beatlabs/gomodctl/internal/license"
 	"github.com/beatlabs/gomodctl/internal/module"
-	homedir "github.com/mitchellh/go-homedir"
+	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -111,6 +111,8 @@ func initConfig() {
 			fmt.Println(err)
 			os.Exit(1)
 		}
+
+		viper.AddConfigPath(".")
 
 		// Search config in home directory with name "gomodctl" (without extension).
 		viper.AddConfigPath(home)

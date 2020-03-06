@@ -62,7 +62,7 @@ func (o *Options) Execute(checker Checker) {
 		}
 
 		if result.Error != nil {
-			r = append(r, fmt.Sprintf("failed because of: %s", result.Error.Error()))
+			r = append(r, result.Error.Error())
 		} else {
 			r = append(r, result.LatestVersion.Original())
 		}
