@@ -7,10 +7,14 @@ import (
 
 	"github.com/Masterminds/semver"
 	"github.com/beatlabs/gomodctl/internal"
+	"github.com/spf13/viper"
 )
 
-// ErrNoVersionAvailable is exported
+// ErrNoVersionAvailable is returned when no version found for a module.
 var ErrNoVersionAvailable = errors.New("no version available")
+
+// ErrModuleIgnored is returned when a module is ignored for version check.
+var ErrModuleIgnored = errors.New("module ignored")
 
 // Checker is exported
 type Checker struct {
@@ -42,25 +46,47 @@ func getModAndFilter(ctx context.Context, path string, filter func(*semver.Versi
 		return nil, err
 	}
 
+	ignoredModules := getIgnoredModules()
+
 	checkResults := make(map[string]internal.CheckResult)
 
 	for _, result := range results {
-		latestVersion, err := filter(result.LocalVersion, result.availableVersions)
-
 		checkResult := internal.CheckResult{
 			LocalVersion: result.LocalVersion,
 		}
 
-		if err != nil {
-			checkResult.Error = err
-		}
+		_, isIgnored := ignoredModules[result.Path]
+		if isIgnored {
+			checkResult.Error = ErrModuleIgnored
+		} else {
+			latestVersion, err := filter(result.LocalVersion, result.AvailableVersions)
 
-		if latestVersion != nil {
-			checkResult.LatestVersion = latestVersion
+			if err != nil {
+				checkResult.Error = err
+			}
+
+			if latestVersion != nil {
+				checkResult.LatestVersion = latestVersion
+			}
 		}
 
 		checkResults[result.Path] = checkResult
 	}
 
 	return checkResults, nil
+}
+
+type void struct{}
+
+var member void
+
+func getIgnoredModules() map[string]void {
+	s := make(map[string]void)
+
+	im := viper.GetStringSlice("ignored_modules")
+	for _, m := range im {
+		s[m] = member
+	}
+
+	return s
 }

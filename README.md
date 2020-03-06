@@ -290,6 +290,21 @@ Result:
 Apache-2.0
 ```
 
+## How to ignore modules for version check and update
+
+Create a `gomodctl.yaml` which has following structure which contains modules you want to ignore.
+```yaml
+ignored_modules:
+ - github.com/x/y
+ - github.com/a/b
+```
+
+gomodctl checks directories for `gomodctl.yaml` in given order.
+ 
+1. `path` parameter
+2.  current working directory
+3.  home directory
+
 ## How to configure for private modules
 
 Since check and update rely on go toolchain, if you have any private module that isn't publicly accessible, don't forget to set up your environment variables. For more information and how to configure, please check [Module configuration for non-public modules](https://golang.org/cmd/go/#hdr-Module_configuration_for_non_public_modules).
