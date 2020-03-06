@@ -9,6 +9,12 @@ type CheckResult struct {
 	Error         error
 }
 
+type LicenseResult struct {
+	LocalVersion *semver.Version
+	Type         string
+	Error        error
+}
+
 // SearchResult is exported.
 type SearchResult struct {
 	Name        string
