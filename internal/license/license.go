@@ -8,23 +8,28 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"time"
 
 	"github.com/Masterminds/semver"
+	"github.com/beatlabs/gomodctl/internal"
+	"github.com/beatlabs/gomodctl/internal/module"
 	"github.com/go-resty/resty/v2"
 	"github.com/google/licenseclassifier"
 	"github.com/mholt/archiver/v3"
 )
 
 const invalidLicense = "Can't find license"
+const licenseFilename = "LICENSE"
 
 // Checker is exported
 type Checker struct {
-	classifier *licenseclassifier.License
-	restClient *resty.Client
-	ctx        context.Context
+	classifier    *licenseclassifier.License
+	restClient    *resty.Client
+	ctx           context.Context
+	versionParser *module.VersionParser
 }
 
 // NewChecker is exported
@@ -35,9 +40,10 @@ func NewChecker(ctx context.Context) (*Checker, error) {
 	}
 
 	return &Checker{
-		classifier: license,
-		restClient: resty.New(),
-		ctx:        ctx,
+		classifier:    license,
+		restClient:    resty.New(),
+		ctx:           ctx,
+		versionParser: module.NewVersionParser(ctx),
 	}, nil
 }
 
@@ -46,6 +52,11 @@ func (f *Checker) Type(moduleName, version string) (string, error) {
 	v, err := f.getVersion(moduleName, version)
 	if err != nil {
 		return "", err
+	}
+
+	localModulePath := createLocalModulePath(moduleName, v)
+	if _, err := os.Stat(localModulePath); !os.IsNotExist(err) {
+		return f.getTypeFromLocalFile(localModulePath)
 	}
 
 	response, err := f.restClient.R().
@@ -79,7 +90,7 @@ func (f *Checker) Type(moduleName, version string) (string, error) {
 
 	match := invalidLicense
 	err = archiver.Walk(tempFile.Name(), func(file archiver.File) error {
-		if strings.HasPrefix(file.Name(), "LICENSE") {
+		if strings.HasPrefix(file.Name(), licenseFilename) {
 			b, err := ioutil.ReadAll(file)
 			if err != nil {
 				return err
@@ -92,6 +103,56 @@ func (f *Checker) Type(moduleName, version string) (string, error) {
 	})
 	if err != nil {
 		return "", err
+	}
+
+	return match, err
+}
+
+func (f *Checker) Types() (map[string]internal.LicenseResult, error) {
+	parse, err := f.versionParser.Parse("")
+	if err != nil {
+		return nil, err
+	}
+
+	m := make(map[string]internal.LicenseResult)
+
+	for _, result := range parse {
+		licenseResult := internal.LicenseResult{
+			LocalVersion: result.LocalVersion,
+		}
+
+		licenseType, err := f.getTypeFromLocalFile(result.Dir)
+		if err != nil {
+			licenseResult.Error = err
+		} else {
+			licenseResult.Type = licenseType
+		}
+
+		m[result.Path] = licenseResult
+	}
+
+	return m, nil
+}
+
+func (f *Checker) getTypeFromLocalFile(path string) (string, error) {
+	match := invalidLicense
+
+	dir, err := ioutil.ReadDir(path)
+	if err != nil {
+		return match, err
+	}
+
+	for _, info := range dir {
+		if strings.HasPrefix(info.Name(), licenseFilename) {
+			b, err := ioutil.ReadFile(filepath.Join(path, info.Name()))
+			if err != nil {
+				return match, err
+			}
+
+			match = f.classifier.NearestMatch(string(b)).Name
+
+			break
+		}
 	}
 
 	return match, err
@@ -140,6 +201,10 @@ func (f *Checker) getLatestVersion(moduleName string) (*semver.Version, error) {
 
 func createGoProxyURLForLatestVersion(moduleName string) string {
 	return fmt.Sprintf("%s/%s/@latest", getGoProxy(), moduleName)
+}
+
+func createLocalModulePath(moduleName string, version *semver.Version) string {
+	return fmt.Sprintf("%s/pkg/mod/%s@%s", os.Getenv("GOPATH"), encodeModuleName(moduleName), version.Original())
 }
 
 func createGoProxyURLForVersion(moduleName string, version *semver.Version) string {

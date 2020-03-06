@@ -25,19 +25,23 @@ type item struct {
 	GoMod    string   `json:"GoMod"`
 }
 
-type versionParser struct {
+func NewVersionParser(ctx context.Context) *VersionParser {
+	return &VersionParser{ctx: ctx}
+}
+
+type VersionParser struct {
 	ctx context.Context
 }
 
-type packageResult struct {
-	path              string
-	localVersion      *semver.Version
+type PackageResult struct {
+	Path              string
+	LocalVersion      *semver.Version
 	availableVersions []*semver.Version
-	dir               string
+	Dir               string
 }
 
 // Parse is exported
-func (v *versionParser) Parse(path string) ([]packageResult, error) {
+func (v *VersionParser) Parse(path string) ([]PackageResult, error) {
 	cmd := exec.CommandContext(v.ctx, "go", "list", "-m", "-versions", "-json", "all")
 
 	if path != "" {
@@ -63,7 +67,7 @@ func (v *versionParser) Parse(path string) ([]packageResult, error) {
 	output := string(out)
 	versionOutputs := regex.FindAllString(output, -1)
 
-	var result []packageResult
+	var result []PackageResult
 
 	for _, versionOutput := range versionOutputs {
 		it := item{}
@@ -80,10 +84,10 @@ func (v *versionParser) Parse(path string) ([]packageResult, error) {
 				availableVersions[i] = semver.MustParse(version)
 			}
 
-			result = append(result, packageResult{
-				path:              it.Path,
-				localVersion:      semver.MustParse(it.Version),
-				dir:               it.Dir,
+			result = append(result, PackageResult{
+				Path:              it.Path,
+				LocalVersion:      semver.MustParse(it.Version),
+				Dir:               it.Dir,
 				availableVersions: availableVersions,
 			})
 		}

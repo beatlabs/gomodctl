@@ -20,7 +20,7 @@ func (c *Scanner) Scan(path string) (map[string]internal.VulnerabilityResult, er
 }
 
 func getModAndVulnerabilitiesCheck(ctx context.Context, path string) (map[string]internal.VulnerabilityResult, error) {
-	parser := versionParser{ctx: ctx}
+	parser := VersionParser{ctx: ctx}
 	vs := make(map[string]internal.VulnerabilityResult)
 	results, err := parser.Parse(path)
 	if err != nil {
@@ -32,7 +32,7 @@ func getModAndVulnerabilitiesCheck(ctx context.Context, path string) (map[string
 }
 
 // vulnerabilityScan function check for possible vulnerabilities using the gosec tool
-func vulnerabilityScan(ctx context.Context, packages []packageResult) map[string]internal.VulnerabilityResult {
+func vulnerabilityScan(ctx context.Context, packages []PackageResult) map[string]internal.VulnerabilityResult {
 
 	var (
 		wg     sync.WaitGroup
@@ -46,7 +46,7 @@ func vulnerabilityScan(ctx context.Context, packages []packageResult) map[string
 	for i := 0; i < len(packages); i++ {
 		go func(i int) {
 			defer wg.Done()
-			goSecDir := packages[i].dir + "/./..."
+			goSecDir := packages[i].Dir + "/./..."
 			arg := []string{"-quiet", "-fmt=json", goSecDir}
 			cmd := exec.CommandContext(ctx, "gosec", arg...)
 			out, _ := cmd.CombinedOutput()
@@ -55,7 +55,7 @@ func vulnerabilityScan(ctx context.Context, packages []packageResult) map[string
 			err := json.Unmarshal([]byte(output), &vr)
 			if err == nil {
 				mu.Lock()
-				result[packages[i].path] = vr
+				result[packages[i].Path] = vr
 				mu.Unlock()
 			}
 		}(i)
