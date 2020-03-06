@@ -80,7 +80,7 @@ func (o *Options) Execute(op Typer) {
 		table := tablewriter.NewWriter(os.Stdout)
 		table.SetHeader([]string{"Module", "Version", "License"})
 		table.SetFooter([]string{"", "number of modules", strconv.Itoa(len(types))})
-		table.SetBorder(true)
+		table.SetBorder(false)
 		table.AppendBulk(data)
 		table.Render()
 	} else {

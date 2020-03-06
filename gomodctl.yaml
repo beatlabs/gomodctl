@@ -1,0 +1,12 @@
+ignored_modules:
+  - github.com/mholt/archiver/v3
+  - github.com/securego/gosec
+  - github.com/stretchr/testify
+  - golang.org/x/mod
+  - github.com/Masterminds/semver
+  - github.com/go-resty/resty/v2
+  - github.com/google/licenseclassifier
+  - github.com/mitchellh/go-homedir
+#  - github.com/olekukonko/tablewriter
+  - github.com/spf13/cobra
+  - github.com/spf13/viper
