@@ -1,6 +1,8 @@
 package internal
 
-import "github.com/Masterminds/semver"
+import (
+	"github.com/Masterminds/semver"
+)
 
 // CheckResult is exported.
 type CheckResult struct {

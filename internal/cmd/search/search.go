@@ -3,12 +3,10 @@ package search
 import (
 	"errors"
 	"fmt"
-	"os"
-	"strconv"
 	"strings"
 
 	"github.com/beatlabs/gomodctl/internal"
-	"github.com/olekukonko/tablewriter"
+	"github.com/beatlabs/gomodctl/internal/printer"
 	"github.com/spf13/cobra"
 )
 
@@ -26,6 +24,7 @@ type Searcher interface {
 type Options struct {
 	Term    string
 	ShowAll bool
+	JSON    bool
 }
 
 // NewCmdSearch returns an instance of Search command.
@@ -58,6 +57,7 @@ func NewCmdSearch(searcher Searcher) *cobra.Command {
 // Fill fills flags into options.
 func (o *Options) Fill(cmd *cobra.Command) {
 	o.ShowAll, _ = cmd.Flags().GetBool("show-all")
+	o.JSON, _ = cmd.Flags().GetBool("json")
 }
 
 // Execute is exported.
@@ -72,36 +72,10 @@ func (o *Options) Execute(op Searcher) {
 		return
 	}
 
-	var data [][]string
-	limit := o.calcLimit(searchResults)
-	limitedResults := searchResults[:limit]
-
-	for _, result := range limitedResults {
-		data = append(data, []string{
-			result.Path,
-			strconv.Itoa(result.Stars),
-			strconv.Itoa(result.ImportCount),
-			fmt.Sprintf("%f", result.Score),
-		})
+	rp := NewResultPrinter(searchResults, o.ShowAll)
+	if o.JSON {
+		printer.PrintJSON(rp)
+	} else {
+		printer.PrintTable(rp)
 	}
-
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Name", "Stars", "Import count", "Score"})
-	table.SetFooter([]string{"", "", "number of modules", strconv.Itoa(len(limitedResults))})
-	table.SetBorder(false)
-	table.AppendBulk(data)
-	table.Render()
-
-	fmt.Println()
-}
-
-func (o *Options) calcLimit(srs []internal.SearchResult) int {
-	c := len(srs)
-	if c > LIMIT {
-		if o.ShowAll {
-			return c
-		}
-		return LIMIT
-	}
-	return c
 }
