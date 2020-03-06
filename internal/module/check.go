@@ -5,9 +5,9 @@ import (
 	"errors"
 	"sort"
 
-	"github.com/spf13/viper"
 	"github.com/Masterminds/semver"
 	"github.com/beatlabs/gomodctl/internal"
+	"github.com/spf13/viper"
 )
 
 // ErrNoVersionAvailable is exported
