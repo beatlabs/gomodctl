@@ -53,11 +53,11 @@ func getModAndFilter(ctx context.Context, path string, filter func(*semver.Versi
 			LocalVersion: result.LocalVersion,
 		}
 
-		_, isIgnored := ignoredModules[result.path]
+		_, isIgnored := ignoredModules[result.Path]
 		if isIgnored {
 			checkResult.Error = ErrModuleIgnored
 		} else {
-			latestVersion, err := filter(result.localVersion, result.availableVersions)
+			latestVersion, err := filter(result.LocalVersion, result.availableVersions)
 
 			if err != nil {
 				checkResult.Error = err
