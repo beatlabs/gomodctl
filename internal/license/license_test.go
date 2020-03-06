@@ -73,3 +73,16 @@ func (s *LicenseTestSuite) Test_EscapeForLowerCase() {
 
 	s.Equal("github.com/beatlabs/patron", encodedName)
 }
+
+func (s *LicenseTestSuite) Test_AllDependenciesLicense() {
+	checker, _ := NewChecker(context.TODO())
+
+	types, err := checker.Types()
+
+	s.NoError(err)
+	s.NotEmpty(types)
+
+	for name, result := range types {
+		s.NoError(result.Error, name)
+	}
+}

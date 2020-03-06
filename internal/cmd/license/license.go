@@ -1,18 +1,23 @@
 package license
 
 import (
-	"errors"
 	"fmt"
+	"os"
+	"strconv"
 
+	"github.com/beatlabs/gomodctl/internal"
+	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 )
 
-// Typer is exported.
+// Typer defines interface to check for license types.
 type Typer interface {
 	Type(moduleName, version string) (string, error)
+	Types() (map[string]internal.LicenseResult, error)
 }
 
-// Options is exported.
+// Options contains module and version to check.
+// Both are optional.
 type Options struct {
 	Module  string
 	Version string
@@ -27,11 +32,10 @@ func NewCmdLicense(typer Typer) *cobra.Command {
 		Short: "fetch license of module, version is optional",
 		Long:  `fetch license of module, if version is empty it will use latest version`,
 		Args: func(cmd *cobra.Command, args []string) error {
-			if len(args) < 1 {
-				return errors.New("requires module name to search")
+			if len(args) > 0 {
+				o.Module = args[0]
 			}
 
-			o.Module = args[0]
 			if len(args) > 1 {
 				o.Version = args[1]
 			}
@@ -46,12 +50,45 @@ func NewCmdLicense(typer Typer) *cobra.Command {
 	return cmd
 }
 
-// Execute is exported.
+// Execute executes command on given Typer and prints output.
 func (o *Options) Execute(op Typer) {
-	licenseType, err := op.Type(o.Module, o.Version)
-	if err != nil {
-		fmt.Println(err)
-	}
+	if o.Version == "" && o.Module == "" {
+		types, err := op.Types()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 
-	fmt.Println(licenseType)
+		var data [][]string
+
+		for name, result := range types {
+			r := []string{
+				name,
+				result.LocalVersion.Original(),
+			}
+
+			if result.Error != nil {
+				r = append(r, fmt.Sprintf("failed because of: %s", result.Error.Error()))
+			} else {
+				r = append(r, result.Type)
+			}
+
+			data = append(data, r)
+		}
+
+		table := tablewriter.NewWriter(os.Stdout)
+		table.SetHeader([]string{"Module", "Version", "License"})
+		table.SetFooter([]string{"", "number of modules", strconv.Itoa(len(types))})
+		table.SetBorder(false)
+		table.AppendBulk(data)
+		table.Render()
+	} else {
+		licenseType, err := op.Type(o.Module, o.Version)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		fmt.Println(licenseType)
+	}
 }

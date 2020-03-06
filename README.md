@@ -230,12 +230,41 @@ Your dependencies updated to latest minor and go.mod.backup created
 
 ### gomodctl license <modulename> <version>
 
-Fetch license of a module, version is optional
+Fetch licenses of the all dependencies of the current module.
+If module name provided, it will fetch license of specific module, version is optional.
+
+Command:
+
+```shell script
+gomodctl license
+```
+
+Result:
+
+```shell script
+                MODULE                |              VERSION               |   LICENSE     
+--------------------------------------+------------------------------------+---------------
+  github.com/go-resty/resty/v2        | v2.1.0                             | MIT           
+  github.com/olekukonko/tablewriter   | v0.0.4                             | MIT           
+  github.com/securego/gosec           | v0.0.0-20200129084146-17df5b370244 | Apache-2.0    
+  github.com/stretchr/testify         | v1.4.0                             | MIT           
+  github.com/Masterminds/semver       | v1.5.0                             | MIT           
+  github.com/google/licenseclassifier | v0.0.0-20200108231022-9dfa8d8474eb | Apache-2.0    
+  github.com/mholt/archiver/v3        | v3.3.0                             | MIT           
+  github.com/mitchellh/go-homedir     | v1.1.0                             | MIT           
+  github.com/spf13/cobra              | v0.0.6                             | Apache-2.0    
+  github.com/spf13/viper              | v1.5.0                             | MIT           
+  golang.org/x/mod                    | v0.2.0                             | BSD-3-Clause  
+--------------------------------------+------------------------------------+---------------
+                                                NUMBER OF MODULES          |      11       
+                                      -------------------------------------+---------------
+```
 
 Command:
 
 ```shell script
 gomodctl license github.com/beatlabs/patron
+gomodctl license github.com/beatlabs/patron v0.30.0
 ```
 
 Result:
