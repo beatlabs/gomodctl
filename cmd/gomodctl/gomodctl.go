@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -40,6 +41,7 @@ This command will search in all public Go packages and return matching results f
 type RootOptions struct {
 	config   string
 	registry string
+	json     bool
 }
 
 // Execute is exported.
@@ -93,8 +95,10 @@ func Execute() {
 func init() {
 	rootCmd.PersistentFlags().StringVar(&ro.config, "config", "", "config file (default is $HOME/gomodctl.yml)")
 	rootCmd.PersistentFlags().StringVar(&ro.registry, "registry", "", "URI of the registry to be used for search")
+	rootCmd.PersistentFlags().BoolVar(&ro.json, "json", false, "Print JSON result")
 	viper.BindPFlag("config", rootCmd.PersistentFlags().Lookup("config"))
 	viper.BindPFlag("registry", rootCmd.PersistentFlags().Lookup("registry"))
+	viper.BindPFlag("json", rootCmd.PersistentFlags().Lookup("json"))
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -123,9 +127,9 @@ func initConfig() {
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+		log.Println("Using config file:", viper.ConfigFileUsed())
 	} else {
-		fmt.Println(err)
+		log.Println(err)
 	}
 }
 

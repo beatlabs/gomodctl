@@ -70,6 +70,9 @@ func (o *Options) Execute(checker Checker) {
 		data = append(data, r)
 	}
 
+	// printer.JSON(checkResults)
+	// return
+
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"Module", "Current", "Latest"})
 	table.SetFooter([]string{"", "number of modules", strconv.Itoa(len(checkResults))})
