@@ -2,7 +2,7 @@ name: gomodctl release
 on: 
   push:
     tags:
-      - '*'
+      - "*"
 
 jobs:
 

@@ -1,4 +1,4 @@
-name: security_check
+name: gomodctl snyk
 on: push
 jobs:
   security:
