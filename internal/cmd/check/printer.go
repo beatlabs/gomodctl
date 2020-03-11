@@ -7,16 +7,19 @@ import (
 	"github.com/beatlabs/gomodctl/internal/printer"
 )
 
+// ResultPrinter implements Printer interface for Check command.
 type ResultPrinter struct {
 	Result map[string]internal.CheckResult
 }
 
+// NewResultPrinter creates a new instance of ResultPrinter.
 func NewResultPrinter(results map[string]internal.CheckResult) *ResultPrinter {
 	return &ResultPrinter{
 		Result: results,
 	}
 }
 
+// TableData returns table friendly result.
 func (p *ResultPrinter) TableData() *printer.TableData {
 	var data [][]string
 
@@ -47,6 +50,7 @@ func (p *ResultPrinter) TableData() *printer.TableData {
 	return td
 }
 
-func (p *ResultPrinter) JsonData() interface{} {
+// JSONData returns JSON friendly result.
+func (p *ResultPrinter) JSONData() interface{} {
 	return p.Result
 }

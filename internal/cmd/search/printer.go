@@ -8,11 +8,13 @@ import (
 	"github.com/beatlabs/gomodctl/internal/printer"
 )
 
+// ResultPrinter implements Printer interface for Search command.
 type ResultPrinter struct {
 	List    []internal.SearchResult
 	ShowAll bool
 }
 
+// NewResultPrinter creates a new instance of ResultPrinter.
 func NewResultPrinter(results []internal.SearchResult, showAll bool) *ResultPrinter {
 	return &ResultPrinter{
 		List:    results,
@@ -31,6 +33,7 @@ func (p *ResultPrinter) calcLimit(srs []internal.SearchResult) int {
 	return c
 }
 
+// TableData returns table friendly result.
 func (p *ResultPrinter) TableData() *printer.TableData {
 	var data [][]string
 	limit := p.calcLimit(p.List)
@@ -57,6 +60,7 @@ func (p *ResultPrinter) TableData() *printer.TableData {
 	return td
 }
 
-func (p *ResultPrinter) JsonData() interface{} {
+// JSONData returns JSON friendly result.
+func (p *ResultPrinter) JSONData() interface{} {
 	return p.List
 }

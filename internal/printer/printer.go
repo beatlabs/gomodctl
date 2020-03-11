@@ -8,6 +8,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
+// TableData defines print options for table output.
 type TableData struct {
 	Header       []string
 	Footer       []string
@@ -17,11 +18,14 @@ type TableData struct {
 	Data         [][]string
 }
 
+// Printable defines contract to be implemented in order to print
+// commands output as a JSON or Table.
 type Printable interface {
 	TableData() *TableData
-	JsonData() interface{}
+	JSONData() interface{}
 }
 
+// PrintTable prints printable result as a table output.
 func PrintTable(p Printable) {
 	td := p.TableData()
 	table := tablewriter.NewWriter(os.Stdout)
@@ -34,8 +38,9 @@ func PrintTable(p Printable) {
 	table.Render()
 }
 
+// PrintJSON prints printable result as a JSON output.
 func PrintJSON(p Printable) {
-	data := p.JsonData()
+	data := p.JSONData()
 	if data == nil {
 		fmt.Println("no data")
 		return
