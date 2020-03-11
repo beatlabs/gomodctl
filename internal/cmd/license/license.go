@@ -13,7 +13,7 @@ import (
 // Typer defines interface to check for license types.
 type Typer interface {
 	Type(moduleName, version string) (string, error)
-	Types() (map[string]internal.LicenseResult, error)
+	Types(path string) (map[string]internal.LicenseResult, error)
 }
 
 // Options contains module and version to check.
@@ -53,7 +53,7 @@ func NewCmdLicense(typer Typer) *cobra.Command {
 // Execute executes command on given Typer and prints output.
 func (o *Options) Execute(op Typer) {
 	if o.Version == "" && o.Module == "" {
-		types, err := op.Types()
+		types, err := op.Types("")
 		if err != nil {
 			fmt.Println(err)
 			return

@@ -114,8 +114,8 @@ func (f *Checker) getTypeFromProxy(moduleName string, v *semver.Version) (string
 }
 
 // Types finds licenses of all dependencies.
-func (f *Checker) Types() (map[string]internal.LicenseResult, error) {
-	parse, err := f.versionParser.Parse("")
+func (f *Checker) Types(path string) (map[string]internal.LicenseResult, error) {
+	parse, err := f.versionParser.Parse(path)
 	if err != nil {
 		return nil, err
 	}
