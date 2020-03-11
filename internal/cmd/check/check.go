@@ -2,11 +2,9 @@ package check
 
 import (
 	"fmt"
-	"os"
-	"strconv"
 
 	"github.com/beatlabs/gomodctl/internal"
-	"github.com/olekukonko/tablewriter"
+	"github.com/beatlabs/gomodctl/internal/printer"
 	"github.com/spf13/cobra"
 )
 
@@ -18,6 +16,7 @@ type Checker interface {
 // Options is exported.
 type Options struct {
 	Path string
+	JSON bool
 }
 
 // NewCmdCheck returns an instance of Search command.
@@ -38,11 +37,17 @@ func NewCmdCheck(checker Checker) *cobra.Command {
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
+			o.Fill(cmd)
 			o.Execute(checker)
 		},
 	}
 
 	return cmd
+}
+
+// Fill fills flags into options.
+func (o *Options) Fill(cmd *cobra.Command) {
+	o.JSON, _ = cmd.Flags().GetBool("json")
 }
 
 // Execute is exported.
@@ -53,30 +58,10 @@ func (o *Options) Execute(checker Checker) {
 		return
 	}
 
-	var data [][]string
-
-	for name, result := range checkResults {
-		r := []string{
-			name,
-			result.LocalVersion.Original(),
-		}
-
-		if result.Error != nil {
-			r = append(r, fmt.Sprintf("failed because of: %s", result.Error.Error()))
-		} else {
-			r = append(r, result.LatestVersion.Original())
-		}
-
-		data = append(data, r)
+	rp := NewResultPrinter(checkResults)
+	if o.JSON {
+		printer.PrintJSON(rp)
+	} else {
+		printer.PrintTable(rp)
 	}
-
-	// printer.JSON(checkResults)
-	// return
-
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Module", "Current", "Latest"})
-	table.SetFooter([]string{"", "number of modules", strconv.Itoa(len(checkResults))})
-	table.SetBorder(false)
-	table.AppendBulk(data)
-	table.Render()
 }

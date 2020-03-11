@@ -35,10 +35,16 @@ func PrintTable(p Printable) {
 }
 
 func PrintJSON(p Printable) {
-	dataB, _ := json.Marshal(p)
-	if dataB == nil {
+	data := p.JsonData()
+	if data == nil {
 		fmt.Println("no data")
 		return
 	}
-	fmt.Println(string(dataB))
+
+	dataB, err := json.Marshal(data)
+	if err != nil {
+		fmt.Println("failed to parse json", err)
+	} else {
+		fmt.Println(string(dataB))
+	}
 }
