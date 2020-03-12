@@ -71,6 +71,53 @@ Result:
                                                   --------------------+-----------
 ```
 
+Add `--json` parameter to the command to print result as a JSON.
+
+Command:
+
+```shell script
+gomodctl search github --json
+```
+
+Result:
+
+```json
+...
+{
+  "Name": "gomock",
+  "Path": "github.com/golang/mock/gomock",
+  "ImportCount": 3900,
+  "Stars": 3844,
+  "Score": 0.99,
+  "Synopsis": "Package gomock is a mock framework for Go."
+},
+{
+  "Name": "uuid",
+  "Path": "github.com/pborman/uuid",
+  "ImportCount": 3579,
+  "Stars": 318,
+  "Score": 1,
+  "Synopsis": "The uuid package generates and inspects UUIDs."
+},
+{
+  "Name": "distribution",
+  "Path": "github.com/docker/distribution",
+  "ImportCount": 3549,
+  "Stars": 5219,
+  "Score": 1,
+  "Synopsis": "Package distribution will define the interfaces for the components of docker distribution."
+},
+{
+  "Name": "state",
+  "Path": "github.com/juju/juju/state",
+  "ImportCount": 3851,
+  "Stars": 1614,
+  "Score": 0.99,
+  "Synopsis": ""
+},
+...
+```
+
 ### gomodctl info <term>
 
 Detailed information about the package with fetched documentation.
@@ -122,6 +169,8 @@ Result:
                                      NUMBER OF MODULES  |          7
                                   ----------------------+----------------------
 ```
+
+Add `--json` parameter to the command to print result as a JSON.
 
 ### gomodctl scan
 
