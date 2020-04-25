@@ -171,6 +171,11 @@ Result:
 ```
 
 Add `--json` parameter to the command to print result as a JSON.
+Add `--path` parameter to the command to run command on another directory.
+
+```shell script
+gomodctl check --json --path ~/projects/gomodctl
+```
 
 ### gomodctl scan
 
@@ -228,6 +233,13 @@ Your dependencies updated to latest minor and go.mod.backup created
                                   ----------------------+----------------------
 ```
 
+Add `--json` parameter to the command to print result as a JSON.
+Add `--path` parameter to the command to run command on another directory.
+
+```shell script
+gomodctl update --json --path ~/projects/gomodctl
+```
+
 ### gomodctl license <modulename> <version>
 
 Fetch licenses of the all dependencies of the current module.
@@ -259,6 +271,8 @@ Result:
                                                 NUMBER OF MODULES          |      11       
                                       -------------------------------------+---------------
 ```
+
+Add `--json` parameter to the command to print result as a JSON.
 
 Command:
 

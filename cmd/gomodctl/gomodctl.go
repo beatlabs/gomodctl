@@ -42,6 +42,7 @@ type RootOptions struct {
 	config   string
 	registry string
 	json     bool
+	path     string
 }
 
 // Execute is exported.
@@ -96,9 +97,11 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&ro.config, "config", "", "config file (default is $HOME/gomodctl.yml)")
 	rootCmd.PersistentFlags().StringVar(&ro.registry, "registry", "", "URI of the registry to be used for search")
 	rootCmd.PersistentFlags().BoolVar(&ro.json, "json", false, "Print JSON result")
+	rootCmd.PersistentFlags().StringVar(&ro.path, "path", "", "Optional go.mod parent directory")
 	viper.BindPFlag("config", rootCmd.PersistentFlags().Lookup("config"))
 	viper.BindPFlag("registry", rootCmd.PersistentFlags().Lookup("registry"))
 	viper.BindPFlag("json", rootCmd.PersistentFlags().Lookup("json"))
+	viper.BindPFlag("path", rootCmd.PersistentFlags().Lookup("path"))
 }
 
 // initConfig reads in config file and ENV variables if set.

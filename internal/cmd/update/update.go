@@ -2,11 +2,9 @@ package check
 
 import (
 	"fmt"
-	"os"
-	"strconv"
 
 	"github.com/beatlabs/gomodctl/internal"
-	"github.com/olekukonko/tablewriter"
+	"github.com/beatlabs/gomodctl/internal/printer"
 	"github.com/spf13/cobra"
 )
 
@@ -18,6 +16,7 @@ type Updater interface {
 // Options is exported.
 type Options struct {
 	Path string
+	JSON bool
 }
 
 // NewCmdUpdate returns an instance of Update command.
@@ -29,12 +28,6 @@ func NewCmdUpdate(updater Updater) *cobra.Command {
 		Short: "update project dependencies",
 		Long:  `update project dependencies to minor versions`,
 		Args: func(cmd *cobra.Command, args []string) error {
-			if len(args) < 1 {
-				o.Path = ""
-			} else {
-				o.Path = args[0]
-			}
-
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
@@ -43,6 +36,12 @@ func NewCmdUpdate(updater Updater) *cobra.Command {
 	}
 
 	return cmd
+}
+
+// Fill fills flags into options.
+func (o *Options) Fill(cmd *cobra.Command) {
+	o.JSON, _ = cmd.Flags().GetBool("json")
+	o.Path, _ = cmd.Flags().GetString("path")
 }
 
 // Execute is exported.
@@ -55,20 +54,10 @@ func (o *Options) Execute(updater Updater) {
 
 	fmt.Println("Your dependencies updated to latest minor and go.mod.backup created")
 
-	var data [][]string
-
-	for name, result := range checkResults {
-		data = append(data, []string{
-			name,
-			result.LocalVersion.Original(),
-			result.LatestVersion.Original(),
-		})
+	rp := NewResultPrinter(checkResults)
+	if o.JSON {
+		printer.PrintJSON(rp)
+	} else {
+		printer.PrintTable(rp)
 	}
-
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Module", "Previous", "Now"})
-	table.SetFooter([]string{"", "number of modules", strconv.Itoa(len(checkResults))})
-	table.SetBorder(false)
-	table.AppendBulk(data)
-	table.Render()
 }

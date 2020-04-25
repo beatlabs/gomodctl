@@ -2,11 +2,9 @@ package license
 
 import (
 	"fmt"
-	"os"
-	"strconv"
 
 	"github.com/beatlabs/gomodctl/internal"
-	"github.com/olekukonko/tablewriter"
+	"github.com/beatlabs/gomodctl/internal/printer"
 	"github.com/spf13/cobra"
 )
 
@@ -21,6 +19,8 @@ type Typer interface {
 type Options struct {
 	Module  string
 	Version string
+	JSON    bool
+	Path    string
 }
 
 // NewCmdLicense returns an instance of License command.
@@ -50,38 +50,27 @@ func NewCmdLicense(typer Typer) *cobra.Command {
 	return cmd
 }
 
+// Fill fills flags into options.
+func (o *Options) Fill(cmd *cobra.Command) {
+	o.JSON, _ = cmd.Flags().GetBool("json")
+	o.Path, _ = cmd.Flags().GetString("path")
+}
+
 // Execute executes command on given Typer and prints output.
 func (o *Options) Execute(op Typer) {
 	if o.Version == "" && o.Module == "" {
-		types, err := op.Types("")
+		types, err := op.Types(o.Path)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 
-		var data [][]string
-
-		for name, result := range types {
-			r := []string{
-				name,
-				result.LocalVersion.Original(),
-			}
-
-			if result.Error != nil {
-				r = append(r, fmt.Sprintf("failed because of: %s", result.Error.Error()))
-			} else {
-				r = append(r, result.Type)
-			}
-
-			data = append(data, r)
+		rp := NewResultPrinter(types)
+		if o.JSON {
+			printer.PrintJSON(rp)
+		} else {
+			printer.PrintTable(rp)
 		}
-
-		table := tablewriter.NewWriter(os.Stdout)
-		table.SetHeader([]string{"Module", "Version", "License"})
-		table.SetFooter([]string{"", "number of modules", strconv.Itoa(len(types))})
-		table.SetBorder(false)
-		table.AppendBulk(data)
-		table.Render()
 	} else {
 		licenseType, err := op.Type(o.Module, o.Version)
 		if err != nil {
