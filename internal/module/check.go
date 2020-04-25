@@ -35,7 +35,7 @@ func getLatestVersion(_ *semver.Version, versions []*semver.Version) (*semver.Ve
 }
 
 func getModAndFilter(ctx context.Context, path string, filter func(*semver.Version, []*semver.Version) (*semver.Version, error)) (map[string]internal.CheckResult, error) {
-	parser := versionParser{ctx: ctx}
+	parser := ModParser{ctx: ctx}
 
 	results, err := parser.Parse(path)
 	if err != nil {
@@ -45,10 +45,10 @@ func getModAndFilter(ctx context.Context, path string, filter func(*semver.Versi
 	checkResults := make(map[string]internal.CheckResult)
 
 	for _, result := range results {
-		latestVersion, err := filter(result.localVersion, result.availableVersions)
+		latestVersion, err := filter(result.LocalVersion, result.availableVersions)
 
 		checkResult := internal.CheckResult{
-			LocalVersion: result.localVersion,
+			LocalVersion: result.LocalVersion,
 		}
 
 		if err != nil {
@@ -59,7 +59,7 @@ func getModAndFilter(ctx context.Context, path string, filter func(*semver.Versi
 			checkResult.LatestVersion = latestVersion
 		}
 
-		checkResults[result.path] = checkResult
+		checkResults[result.Path] = checkResult
 	}
 
 	return checkResults, nil

@@ -28,12 +28,6 @@ func NewCmdCheck(checker Checker) *cobra.Command {
 		Short: "check local module for updates",
 		Long:  `get list of local module and check them for updates`,
 		Args: func(cmd *cobra.Command, args []string) error {
-			if len(args) < 1 {
-				o.Path = ""
-			} else {
-				o.Path = args[0]
-			}
-
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
@@ -48,6 +42,7 @@ func NewCmdCheck(checker Checker) *cobra.Command {
 // Fill fills flags into options.
 func (o *Options) Fill(cmd *cobra.Command) {
 	o.JSON, _ = cmd.Flags().GetBool("json")
+	o.Path, _ = cmd.Flags().GetString("path")
 }
 
 // Execute is exported.
