@@ -4,10 +4,11 @@
 [![gomodctl release](https://github.com/beatlabs/gomodctl/workflows/gomodctl%20release/badge.svg)](https://github.com/beatlabs/gomodctl/actions?query=workflow%3A%22gomodctl+release%22)
 [![gomodctl snyk](https://github.com/beatlabs/gomodctl/workflows/gomodctl%20snyk/badge.svg)](https://github.com/beatlabs/gomodctl/actions?query=workflow%3A%22gomodctl+snyk%22)
 
-*gomodctl* - search, check and update go modules.
+_gomodctl_ - search, check and update go modules.
 
 Currently supported commands:
-- search -  search for Go packages by the given term
+
+- search - search for Go packages by the given term
 - info - search by the given term and show information about the matched package
 - check - check project dependencies for the version information and shows outdated packages
 - update - automatically sync project dependencies with their latest version
@@ -27,7 +28,6 @@ Or using [Homebrew 🍺](https://brew.sh)
 brew tap beatlabs/gomodctl https://github.com/beatlabs/gomodctl
 brew install gomodctl
 ```
-
 
 ## Features
 
@@ -143,6 +143,8 @@ package trace
 ...
 ```
 
+Use `--imports` and `--importers` flags to see list of imports in the package or importers using the package.
+
 ### gomodctl check
 
 Check module versions in the given Go project.
@@ -183,6 +185,7 @@ gomodctl scan
 ```
 
 Result
+
 ```shell script
                 MODULE                | CONFIDENCE | SEVERITY |                       CWE                       |                                                                    LINE,COLUMN
 --------------------------------------+------------+----------+-------------------------------------------------+------------------------------------------------------------------------------------

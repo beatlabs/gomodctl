@@ -38,3 +38,21 @@ func TestClient_Info2(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, response)
 }
+
+func TestClient_Imports(t *testing.T) {
+	client := NewClient(context.TODO())
+
+	response, err := client.Imports("github.com/stretchr/testify/mock")
+
+	assert.NoError(t, err)
+	assert.NotEmpty(t, response)
+}
+
+func TestClient_Importers(t *testing.T) {
+	client := NewClient(context.TODO())
+
+	response, err := client.Importers("github.com/stretchr/testify/mock")
+
+	assert.NoError(t, err)
+	assert.NotEmpty(t, response)
+}

@@ -2,6 +2,7 @@ package godoc
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 
 	"github.com/beatlabs/gomodctl/internal"
@@ -16,6 +17,18 @@ type response struct {
 		Stars       int     `json:"stars,omitempty"`
 		Score       float64 `json:"score"`
 		Synopsis    string  `json:"synopsis,omitempty"`
+	} `json:"results"`
+}
+
+type imports struct {
+	Results []struct {
+		Path string `json:"path"`
+	} `json:"imports"`
+}
+
+type importers struct {
+	Results []struct {
+		Path string `json:"path"`
 	} `json:"results"`
 }
 
@@ -89,4 +102,58 @@ func (c *Client) Info(path string) (string, error) {
 	}
 
 	return response, err
+}
+
+// Imports fetches imports of a package
+func (c *Client) Imports(path string) ([]string, error) {
+	if path == "" {
+		return nil, errors.New("path is empty")
+	}
+
+	resp, err := c.restClient.R().
+		SetContext(c.ctx).
+		SetHeader("Accept", "application/json").
+		Get("https://api.godoc.org/imports/" + path)
+
+	if err != nil {
+		return nil, err
+	}
+
+	imps := &imports{}
+	if err := json.Unmarshal(resp.Body(), imps); err != nil {
+		return nil, err
+	}
+
+	paths := []string{}
+	for _, imp := range imps.Results {
+		paths = append(paths, imp.Path)
+	}
+	return paths, nil
+}
+
+// Importers fetches importers of a package
+func (c *Client) Importers(path string) ([]string, error) {
+	if path == "" {
+		return nil, errors.New("path is empty")
+	}
+
+	resp, err := c.restClient.R().
+		SetContext(c.ctx).
+		SetHeader("Accept", "application/json").
+		Get("https://api.godoc.org/importers/" + path)
+
+	if err != nil {
+		return nil, err
+	}
+
+	imps := &importers{}
+	if err := json.Unmarshal(resp.Body(), imps); err != nil {
+		return nil, err
+	}
+
+	paths := []string{}
+	for _, imp := range imps.Results {
+		paths = append(paths, imp.Path)
+	}
+	return paths, nil
 }
