@@ -2,7 +2,6 @@ package godoc
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 
 	"github.com/beatlabs/gomodctl/internal"
@@ -110,17 +109,14 @@ func (c *Client) Imports(path string) ([]string, error) {
 		return nil, errors.New("path is empty")
 	}
 
-	resp, err := c.restClient.R().
+	imps := &imports{}
+	_, err := c.restClient.R().
 		SetContext(c.ctx).
 		SetHeader("Accept", "application/json").
+		SetResult(imps).
 		Get("https://api.godoc.org/imports/" + path)
 
 	if err != nil {
-		return nil, err
-	}
-
-	imps := &imports{}
-	if err := json.Unmarshal(resp.Body(), imps); err != nil {
 		return nil, err
 	}
 
@@ -137,17 +133,14 @@ func (c *Client) Importers(path string) ([]string, error) {
 		return nil, errors.New("path is empty")
 	}
 
-	resp, err := c.restClient.R().
+	imps := &importers{}
+	_, err := c.restClient.R().
 		SetContext(c.ctx).
 		SetHeader("Accept", "application/json").
+		SetResult(imps).
 		Get("https://api.godoc.org/importers/" + path)
 
 	if err != nil {
-		return nil, err
-	}
-
-	imps := &importers{}
-	if err := json.Unmarshal(resp.Body(), imps); err != nil {
 		return nil, err
 	}
 
