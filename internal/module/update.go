@@ -66,6 +66,9 @@ func (u *Updater) Update(path string) (map[string]internal.CheckResult, error) {
 	}
 
 	if updates > 0 {
+		parse.Cleanup()
+		parse.SortBlocks()
+
 		format, err := parse.Format()
 		if err != nil {
 			return nil, err
