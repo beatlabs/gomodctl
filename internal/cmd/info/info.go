@@ -25,6 +25,7 @@ type Options struct {
 	Term          string
 	ShowImports   bool
 	ShowImporters bool
+	WithDoc       bool
 }
 
 // NewCmdInfo returns an instance of Search command.
@@ -51,6 +52,7 @@ func NewCmdInfo(ig Infoer) *cobra.Command {
 
 	cmd.Flags().BoolP("imports", "i", false, "--imports")
 	cmd.Flags().BoolP("importers", "e", false, "--importers")
+	cmd.Flags().BoolP("with-doc", "d", false, "--with-doc")
 
 	return cmd
 }
@@ -59,6 +61,7 @@ func NewCmdInfo(ig Infoer) *cobra.Command {
 func (o *Options) Fill(cmd *cobra.Command) {
 	o.ShowImports, _ = cmd.Flags().GetBool("imports")
 	o.ShowImporters, _ = cmd.Flags().GetBool("importers")
+	o.WithDoc, _ = cmd.Flags().GetBool("with-doc")
 }
 
 // Execute is exported.
@@ -87,6 +90,16 @@ func (o *Options) Execute(ig Infoer) {
 	})
 	table.Render()
 
+	if o.WithDoc {
+		infoResult, err := ig.Info(top.Path)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		fmt.Println("\nDocumentation:")
+		fmt.Println(infoResult)
+	}
+
 	if o.ShowImports {
 		imports, err := ig.Imports(top.Path)
 		if err != nil {
@@ -106,13 +119,4 @@ func (o *Options) Execute(ig Infoer) {
 		fmt.Println("\nImporters:")
 		fmt.Println(strings.Join(importers, "\n"))
 	}
-
-	infoResult, err := ig.Info(top.Path)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	fmt.Println("\nDocumentation:")
-	fmt.Println(infoResult)
 }
