@@ -54,12 +54,16 @@ func (f *Checker) Type(moduleName, version string) (string, error) {
 		return "", err
 	}
 
-	localModulePath := createLocalModulePath(moduleName, v)
+	return f.getLicense(moduleName, v)
+}
+
+func (f *Checker) getLicense(moduleName string, version *semver.Version) (string, error) {
+	localModulePath := createLocalModulePath(moduleName, version)
 	if _, err := os.Stat(localModulePath); !os.IsNotExist(err) {
 		return f.getTypeFromLocalFile(localModulePath)
 	}
 
-	return f.getTypeFromProxy(moduleName, v)
+	return f.getTypeFromProxy(moduleName, version)
 }
 
 // getTypeFromProxy fetches source code from proxy and tries to detect license.
@@ -127,7 +131,7 @@ func (f *Checker) Types(path string) (map[string]internal.LicenseResult, error) 
 			LocalVersion: result.LocalVersion,
 		}
 
-		licenseType, err := f.getTypeFromLocalFile(result.Dir)
+		licenseType, err := f.getLicense(result.Path, licenseResult.LocalVersion)
 		if err != nil {
 			licenseResult.Error = err
 		} else {
