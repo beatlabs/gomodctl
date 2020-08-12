@@ -19,6 +19,18 @@ type response struct {
 	} `json:"results"`
 }
 
+type imports struct {
+	Results []struct {
+		Path string `json:"path"`
+	} `json:"imports"`
+}
+
+type importers struct {
+	Results []struct {
+		Path string `json:"path"`
+	} `json:"results"`
+}
+
 // Client is exported.
 type Client struct {
 	restClient *resty.Client
@@ -89,4 +101,52 @@ func (c *Client) Info(path string) (string, error) {
 	}
 
 	return response, err
+}
+
+// Imports fetches imports of a package
+func (c *Client) Imports(path string) ([]string, error) {
+	if path == "" {
+		return nil, errors.New("path is empty")
+	}
+
+	imps := &imports{}
+	_, err := c.restClient.R().
+		SetContext(c.ctx).
+		SetHeader("Accept", "application/json").
+		SetResult(imps).
+		Get("https://api.godoc.org/imports/" + path)
+
+	if err != nil {
+		return nil, err
+	}
+
+	paths := []string{}
+	for _, imp := range imps.Results {
+		paths = append(paths, imp.Path)
+	}
+	return paths, nil
+}
+
+// Importers fetches importers of a package
+func (c *Client) Importers(path string) ([]string, error) {
+	if path == "" {
+		return nil, errors.New("path is empty")
+	}
+
+	imps := &importers{}
+	_, err := c.restClient.R().
+		SetContext(c.ctx).
+		SetHeader("Accept", "application/json").
+		SetResult(imps).
+		Get("https://api.godoc.org/importers/" + path)
+
+	if err != nil {
+		return nil, err
+	}
+
+	paths := []string{}
+	for _, imp := range imps.Results {
+		paths = append(paths, imp.Path)
+	}
+	return paths, nil
 }
