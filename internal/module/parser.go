@@ -39,7 +39,7 @@ type ModParser struct {
 type PackageResult struct {
 	Path              string
 	LocalVersion      *semver.Version
-	availableVersions []*semver.Version
+	AvailableVersions []*semver.Version
 	Dir               string
 }
 
@@ -91,7 +91,7 @@ func (v *ModParser) Parse(path string) ([]PackageResult, error) {
 				Path:              it.Path,
 				LocalVersion:      semver.MustParse(it.Version),
 				Dir:               it.Dir,
-				availableVersions: availableVersions,
+				AvailableVersions: availableVersions,
 			})
 		}
 	}

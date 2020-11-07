@@ -17,7 +17,7 @@ import (
 	"github.com/beatlabs/gomodctl/internal/godoc"
 	"github.com/beatlabs/gomodctl/internal/license"
 	"github.com/beatlabs/gomodctl/internal/module"
-	homedir "github.com/mitchellh/go-homedir"
+	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -64,11 +64,6 @@ func Execute() {
 	ro.config = viper.GetString("config")
 	ro.registry = viper.GetString("registry")
 
-	// Prepare configuration variables.
-	initConfig()
-
-	// fmt.Println("config:", ro.config, "registry:", ro.registry)
-
 	gd := godoc.NewClient(ctx)
 	checker := module.Checker{Ctx: ctx}
 	updater := module.Updater{Ctx: ctx}
@@ -94,6 +89,7 @@ func Execute() {
 }
 
 func init() {
+	cobra.OnInitialize(initConfig)
 	rootCmd.PersistentFlags().StringVar(&ro.config, "config", "", "config file (default is $HOME/gomodctl.yml)")
 	rootCmd.PersistentFlags().StringVar(&ro.registry, "registry", "", "URI of the registry to be used for search")
 	rootCmd.PersistentFlags().BoolVar(&ro.json, "json", false, "Print JSON result")
@@ -119,8 +115,12 @@ func initConfig() {
 			os.Exit(1)
 		}
 
-		// Search config in home directory with name "gomodctl" (without extension).
+		if ro.path != "" {
+			viper.AddConfigPath(ro.path)
+		}
+		viper.AddConfigPath(".")
 		viper.AddConfigPath(home)
+
 		viper.SetConfigName("gomodctl")
 	}
 
