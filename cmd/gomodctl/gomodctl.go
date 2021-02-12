@@ -48,6 +48,9 @@ type RootOptions struct {
 
 // Execute is exported.
 func Execute() {
+	// Since this application is a one-shot execution there is no point of making GC available and slow down the application.
+	// https://www.dotconferences.com/2019/03/bryan-boreham-go-tune-your-memory
+	// https://www.youtube.com/watch?v=uyifh6F_7WM
 	debug.SetGCPercent(-1)
 
 	ctx, cancel := context.WithCancel(context.Background())
