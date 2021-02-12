@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"runtime/debug"
 	"syscall"
 
 	"github.com/beatlabs/gomodctl/internal/cmd/check"
@@ -47,6 +48,8 @@ type RootOptions struct {
 
 // Execute is exported.
 func Execute() {
+	debug.SetGCPercent(-1)
+
 	ctx, cancel := context.WithCancel(context.Background())
 
 	signals := make(chan os.Signal, 1)

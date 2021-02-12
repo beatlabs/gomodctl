@@ -15,6 +15,8 @@ import (
 
 var regex = regexp.MustCompile(`({([^}]*)})`)
 
+var go115 = semver.MustParse("1.15.0")
+
 type item struct {
 	Path     string   `json:"Path"`
 	Version  string   `json:"Version"`
@@ -45,7 +47,17 @@ type PackageResult struct {
 
 // Parse is exported
 func (v *ModParser) Parse(path string) ([]PackageResult, error) {
-	cmd := exec.CommandContext(v.ctx, "go", "list", "-m", "-versions", "-json", "all")
+	goVersion, err := v.goRuntimeVersion()
+	if err != nil {
+		return nil, err
+	}
+
+	args := []string{"list", "-m", "-versions", "-json", "-mod=mod", "all"}
+	if goVersion.LessThan(go115) {
+		args = []string{"list", "-m", "-versions", "-json", "all"}
+	}
+
+	cmd := exec.CommandContext(v.ctx, "go", args...)
 
 	if path != "" {
 		home := viper.GetString("home")
@@ -97,4 +109,23 @@ func (v *ModParser) Parse(path string) ([]PackageResult, error) {
 	}
 
 	return result, nil
+}
+
+func (v *ModParser) goRuntimeVersion() (*semver.Version, error) {
+	cmd := exec.CommandContext(v.ctx, "go", "version")
+
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return nil, err
+	}
+
+	r := regexp.MustCompile(`(go version go)(.*)( .+)`)
+	find := r.FindSubmatch(out)
+
+	version, err := semver.NewVersion(string(find[2]))
+	if err != nil {
+		return nil, err
+	}
+
+	return version, nil
 }
