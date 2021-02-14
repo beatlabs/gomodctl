@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
-	"github.com/Masterminds/semver"
 	"github.com/beatlabs/gomodctl/internal"
 	"golang.org/x/mod/modfile"
 )
@@ -86,17 +85,4 @@ func (u *Updater) Update(path string) (map[string]internal.CheckResult, error) {
 	}
 
 	return latestMinors, nil
-}
-
-func getLatestMinorVersion(current *semver.Version, versions []*semver.Version) (*semver.Version, error) {
-	n := 0
-	for _, version := range versions {
-		if version.Major() == current.Major() {
-			versions[n] = version
-			n++
-		}
-	}
-	versions = versions[:n]
-
-	return getLatestVersion(nil, versions)
 }
