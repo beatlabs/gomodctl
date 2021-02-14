@@ -24,6 +24,7 @@ import (
 )
 
 var ro RootOptions
+var version string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -36,6 +37,7 @@ Example:
   gomodctl search mongo
 
 This command will search in all public Go packages and return matching results for term "mongo".`,
+	Version: version,
 }
 
 // RootOptions is exported.

@@ -1,5 +1,5 @@
 name: gomodctl release
-on: 
+on:
   push:
     tags:
       - "*"
@@ -12,18 +12,18 @@ jobs:
 
     steps:
     - name: Check out code into the Go module directory
-      uses: actions/checkout@master
+      uses: actions/checkout@v2
 
     - name: Unshallow
       run: git fetch --prune --unshallow
 
     - name: Set up Go (1.15)
-      uses: actions/setup-go@v1
+      uses: actions/setup-go@v2
       with:
         go-version: 1.15
 
     - name: Run GoReleaser
-      uses: goreleaser/goreleaser-action@master
+      uses: goreleaser/goreleaser-action@v2
       with:
         version: latest
         args: release --rm-dist
