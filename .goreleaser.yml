@@ -53,7 +53,7 @@ release:
   draft: true
 brews:
  -
-  github:
+  tap:
     owner: beatlabs
     name: gomodctl
   description: "search,check and update go modules"
