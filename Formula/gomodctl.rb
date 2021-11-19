@@ -6,7 +6,6 @@ class Gomodctl < Formula
   desc "search,check and update go modules"
   homepage "https://github.com/beatlabs/gomodctl"
   version "0.5.0"
-  bottle :unneeded
 
   if OS.mac? && Hardware::CPU.intel?
     url "https://github.com/beatlabs/gomodctl/releases/download/v0.5.0/gomodctl_Darwin_x86_64.tar.gz"
